@@ -1,0 +1,3 @@
+#ifndef _OPENGL_FUNCTIONS_H
+#define _OPENGL_FUNCTIONS_H
+#endif

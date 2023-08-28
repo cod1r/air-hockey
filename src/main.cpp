@@ -1,5 +1,8 @@
 #include <iostream>
+#include <SDL2/SDL.h>
+#include "AirHockey.h"
 int main()
 {
-    std::cout << __cplusplus << std::endl;
+    AirHockey ah = AirHockey();
+    ah.loop();
 }
