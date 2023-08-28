@@ -1,4 +1,5 @@
 #include "AirHockey.h"
+#include "Renderer.h"
 #include <SDL2/SDL.h>
 #include <iostream>
 AirHockey::AirHockey()
@@ -17,6 +18,7 @@ AirHockey::AirHockey()
         std::cout << SDL_GetError() << std::endl;
         throw;
     }
+    renderer = new Renderer();
 }
 AirHockey::~AirHockey()
 {
