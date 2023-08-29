@@ -41,6 +41,7 @@ void AirHockey::loop()
             }
         }
         if (quit) break;
+        renderer->render();
         SDL_GL_SwapWindow(window);
     }
 }
