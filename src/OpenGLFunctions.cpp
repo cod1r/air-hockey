@@ -9,4 +9,10 @@ OpenGLFunctions::OpenGLFunctions()
     glGenTextures = (void (*)(GLsizei, GLuint*))SDL_GL_GetProcAddress("glGenTextures");
     glClear = (void (*)(GLbitfield))SDL_GL_GetProcAddress("glClear");
     glCreateProgram = (GLuint (*)())SDL_GL_GetProcAddress("glCreateProgram");
+    glCreateShader = (GLuint (*)(GLenum))SDL_GL_GetProcAddress("glCreateShader");
+    glShaderSource = (void (*)(GLuint, GLsizei, const GLchar**, const GLint*))SDL_GL_GetProcAddress("glShaderSource");
+    glCompileShader = (void (*)(GLuint))SDL_GL_GetProcAddress("glCompileShader");
+    glAttachShader = (void (*)(GLuint, GLuint))SDL_GL_GetProcAddress("glAttachShader");
+    glGetShaderInfoLog = (void (*)(GLuint, GLsizei, GLsizei*, GLchar*))SDL_GL_GetProcAddress("glGetShaderInfoLog");
+    glGetShaderiv = (void (*)(GLuint, GLenum, GLint*))SDL_GL_GetProcAddress("glGetShaderiv");
 }

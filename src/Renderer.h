@@ -7,6 +7,8 @@ class Renderer {
     std::vector<GLuint> vaos;
     std::vector<std::vector<GLuint>> vbos;
     std::vector<GLuint> programs;
+    GLuint vshdr;
+    GLuint fshdr;
 public:
     OpenGLFunctions *glFunctions = nullptr;
     Renderer();
