@@ -66,3 +66,6 @@ void Renderer::read_shaders()
         throw;
     }
 }
+Renderer::~Renderer()
+{
+}

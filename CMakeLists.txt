@@ -16,10 +16,15 @@ enable_testing()
 add_executable(
   hello_test
   tests/hello_test.cc
+  src/AirHockey.cpp
+  src/Renderer.cpp
+  src/OpenGLFunctions.cpp
 )
 target_link_libraries(
   hello_test
   GTest::gtest_main
+  SDL2
+  GL
 )
 
 include(GoogleTest)
