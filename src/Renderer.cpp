@@ -36,5 +36,33 @@ void Renderer::read_shaders()
             glFunctions->glGetShaderInfoLog(vshdr, 1024, &length, buffer);
             std::cerr << buffer << std::endl;
         }
+    } else {
+        std::cerr << "vertex shader could not be opened" << std::endl;
+        throw;
+    }
+    vsh.close();
+    std::filesystem::path fsh_path(std::string("shaders/frag.glsl"));
+    std::ifstream fsh;
+    fsh.open(fsh_path.c_str());
+    if (fsh.is_open()) {
+        std::string fshdr_contents;
+        while (!fsh.eof()) {
+            fshdr_contents += fsh.get();
+        }
+        fshdr = glFunctions->glCreateShader(GL_VERTEX_SHADER);
+        const GLchar *shdr_cstr = fshdr_contents.c_str();
+        glFunctions->glShaderSource(fshdr, 1, &shdr_cstr, NULL);
+        glFunctions->glCompileShader(fshdr);
+        GLint status;
+        glFunctions->glGetShaderiv(fshdr, GL_COMPILE_STATUS, &status);
+        if (status != GL_TRUE) {
+            GLsizei length;
+            GLchar buffer[1024];
+            glFunctions->glGetShaderInfoLog(fshdr, 1024, &length, buffer);
+            std::cerr << buffer << std::endl;
+        }
+    } else {
+        std::cerr << "fragment shader could not be opened" << std::endl;
+        throw;
     }
 }
