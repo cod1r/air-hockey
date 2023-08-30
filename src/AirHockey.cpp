@@ -1,7 +1,10 @@
 #include "AirHockey.h"
 #include "Renderer.h"
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <iostream>
+#include <format>
+#include <filesystem>
 AirHockey::AirHockey()
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -32,16 +35,28 @@ void AirHockey::loop()
     bool quit = false;
     while (1) {
         while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_KEYDOWN) {
-                switch (e.key.keysym.sym) {
-                    case SDLK_q: {
-                        quit = true;
+            switch (e.type) {
+                case SDL_KEYDOWN: {
+                    switch (e.key.keysym.sym) {
+                        case SDLK_q: {
+                            quit = true;
+                        }
                     }
-                }
+                } break;
+                case SDL_FINGERMOTION:
+                case SDL_MOUSEMOTION: {
+                    std::cout << std::format("{} {}", e.motion.x, e.motion.y) << std::endl;
+                } break;
             }
         }
         if (quit) break;
         renderer->render();
         SDL_GL_SwapWindow(window);
     }
+}
+void AirHockey::load_assets()
+{
+    std::filesystem::path texture_atlas(std::string("assets/puck.qoi"));
+    SDL_RWops *src = SDL_RWFromFile(texture_atlas.c_str(), "rb");
+    SDL_Surface *s = IMG_LoadQOI_RW(src);
 }

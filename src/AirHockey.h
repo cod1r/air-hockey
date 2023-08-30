@@ -8,6 +8,7 @@ class AirHockey {
 public:
     AirHockey();
     ~AirHockey();
+    void load_assets();
     void loop();
 };
 #endif

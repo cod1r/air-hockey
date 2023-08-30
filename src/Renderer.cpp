@@ -12,6 +12,7 @@ Renderer::Renderer()
 }
 void Renderer::render()
 {
+    glFunctions->glClearColor(1, 1, 1, 1);
     glFunctions->glClear(GL_COLOR_BUFFER_BIT);
 }
 void Renderer::read_shaders()
@@ -65,6 +66,7 @@ void Renderer::read_shaders()
         std::cerr << "fragment shader could not be opened" << std::endl;
         throw;
     }
+    fsh.close();
 }
 Renderer::~Renderer()
 {

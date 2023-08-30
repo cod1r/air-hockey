@@ -25,6 +25,7 @@ target_link_libraries(
   GTest::gtest_main
   SDL2
   GL
+  SDL2_image
 )
 
 include(GoogleTest)
