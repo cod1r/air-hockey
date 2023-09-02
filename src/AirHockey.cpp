@@ -19,6 +19,7 @@ void AirHockey::loop()
 {
     SDL_Event e;
     bool quit = false;
+    std::vector<float> puck_vec(puck_vertices.size());
     while (1) {
         while (SDL_PollEvent(&e)) {
             switch (e.type) {
@@ -31,10 +32,9 @@ void AirHockey::loop()
                 } break;
                 case SDL_FINGERMOTION:
                 case SDL_MOUSEMOTION: {
-                    std::vector<float> puck_vec(puck_vertices.begin(), puck_vertices.end());
                     for (int i = 0; i < puck_vertices.size(); i += 2) {
-                        puck_vec[i] += -(500 - e.motion.x) / 500.0f;
-                        puck_vec[i + 1] += (500 - e.motion.y) / 500.0f;
+                        puck_vec[i] = puck_vertices[i] -(500 - e.motion.x) / 500.0f;
+                        puck_vec[i + 1] = puck_vertices[i + 1] + (500 - e.motion.y) / 500.0f;
                     }
                     renderer->update_puck_coords(puck_vec);
                 } break;
