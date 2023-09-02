@@ -7,26 +7,12 @@
 #include <filesystem>
 AirHockey::AirHockey()
 {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        std::cout << SDL_GetError() << std::endl;
-        throw;
-    }
-    window = SDL_CreateWindow("AirHockey", 0, 0, 600, 600, SDL_WINDOW_OPENGL);
-    if (window == NULL) {
-        std::cout << SDL_GetError() << std::endl;
-        throw;
-    }
-    SDL_GLContext ctx = SDL_GL_CreateContext(window);
-    if (SDL_GL_MakeCurrent(window, ctx) < 0) {
-        std::cout << SDL_GetError() << std::endl;
-        throw;
-    }
     renderer = new Renderer();
+    std::vector<float> puck_coords(puck_vertices.begin(), puck_vertices.end());
+    renderer->init_puck(puck_coords);
 }
 AirHockey::~AirHockey()
 {
-    SDL_DestroyWindow(window);
-    SDL_Quit();
 }
 
 void AirHockey::loop()
@@ -45,18 +31,16 @@ void AirHockey::loop()
                 } break;
                 case SDL_FINGERMOTION:
                 case SDL_MOUSEMOTION: {
-                    std::cout << std::format("{} {}", e.motion.x, e.motion.y) << std::endl;
+                    std::vector<float> puck_vec(puck_vertices.begin(), puck_vertices.end());
+                    for (int i = 0; i < puck_vertices.size(); i += 2) {
+                        puck_vec[i] += -(500 - e.motion.x) / 500.0f;
+                        puck_vec[i + 1] += (500 - e.motion.y) / 500.0f;
+                    }
+                    renderer->update_puck_coords(puck_vec);
                 } break;
             }
         }
         if (quit) break;
         renderer->render();
-        SDL_GL_SwapWindow(window);
     }
-}
-void AirHockey::load_assets()
-{
-    std::filesystem::path texture_atlas(std::string("assets/puck.qoi"));
-    SDL_RWops *src = SDL_RWFromFile(texture_atlas.c_str(), "rb");
-    SDL_Surface *s = IMG_LoadQOI_RW(src);
 }

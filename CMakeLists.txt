@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 add_executable(air_hockey src/main.cpp src/AirHockey.cpp src/Renderer.cpp src/OpenGLFunctions.cpp)
 target_link_libraries(air_hockey GL SDL2 SDL2_image)
 file(COPY shaders DESTINATION .)
+file(COPY assets DESTINATION .)
 include(FetchContent)
 FetchContent_Declare(
   googletest
