@@ -31,4 +31,8 @@ OpenGLFunctions::OpenGLFunctions()
     glUniform4f = (void (*)(GLint, GLfloat, GLfloat, GLfloat, GLfloat))SDL_GL_GetProcAddress("glUniform4f");
     glGetError = (GLenum (*)())SDL_GL_GetProcAddress("glGetError");
     glEnableVertexAttribArray = (void (*)(GLuint))SDL_GL_GetProcAddress("glEnableVertexAttribArray");
+    glGetBufferSubData = (void (*)(GLenum, GLint, GLsizei, void*))SDL_GL_GetProcAddress("glGetBufferSubData");
+    glGetNamedBufferSubData = (void (*)(GLuint, GLint, GLsizei, void*))SDL_GL_GetProcAddress("glGetNamedBufferSubData");
+    glGetBufferParameteriv = (void (*)(GLenum, GLenum, GLint*))SDL_GL_GetProcAddress("glGetBufferParameteriv");
+    glGetNamedBufferParameteriv = (void (*)(GLuint, GLenum, GLint*))SDL_GL_GetProcAddress("glGetNamedBufferParameteriv");
 }

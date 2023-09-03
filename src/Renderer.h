@@ -4,6 +4,8 @@
 #ifndef _RENDERER_H
 #define _RENDERER_H
 class OpenGLFunctions;
+static const int PUCK_IDX = 0;
+static const int PADDLE_IDX = 1;
 class Renderer {
     std::vector<GLuint> vaos;
     std::vector<std::vector<GLuint>> vbos;
@@ -11,8 +13,6 @@ class Renderer {
     std::vector<GLuint> programs;
     GLuint vshdr;
     GLuint fshdr;
-    size_t puck_array_buffer_idx;
-    size_t paddle_array_buffer_idx;
 public:
     OpenGLFunctions *glFunctions = nullptr;
     SDL_Window *window = nullptr;

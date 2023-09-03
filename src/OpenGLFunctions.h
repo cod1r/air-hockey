@@ -34,6 +34,10 @@ class OpenGLFunctions {
         void (*glUniform4f)(GLint, GLfloat, GLfloat, GLfloat, GLfloat);
         GLenum (*glGetError)();
         void (*glEnableVertexAttribArray)(GLuint);
+        void (*glGetBufferSubData)(GLenum, GLint, GLsizei, void*);
+        void (*glGetNamedBufferSubData)(GLuint, GLint, GLsizei, void*);
+        void (*glGetBufferParameteriv)(GLenum, GLenum, GLint*);
+        void (*glGetNamedBufferParameteriv)(GLuint, GLenum, GLint*);
         OpenGLFunctions();
 };
 #endif
