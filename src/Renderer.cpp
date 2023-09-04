@@ -14,7 +14,7 @@ Renderer::Renderer()
         std::cout << SDL_GetError() << std::endl;
         throw;
     }
-    window = SDL_CreateWindow("AirHockey", 0, 0, 1000, 1000, SDL_WINDOW_OPENGL | SDL_WINDOW_BORDERLESS);
+    window = SDL_CreateWindow("AirHockey", 0, 0, 1000, 1000, SDL_WINDOW_OPENGL | SDL_WINDOW_BORDERLESS | SDL_WINDOW_INPUT_GRABBED | SDL_WINDOW_ALLOW_HIGHDPI);
     if (window == NULL) {
         std::cout << SDL_GetError() << std::endl;
         throw;
