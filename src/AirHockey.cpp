@@ -5,24 +5,24 @@
 #include <iostream>
 #include <format>
 #include <filesystem>
-AirHockey::AirHockey()
+AirHockey::AirHockey::AirHockey()
 {
-    renderer = new Renderer();
+    renderer = new Renderer::Renderer();
     std::vector<float> puck_coords(puck_vertices.begin(), puck_vertices.end());
     renderer->init_puck(puck_coords);
     std::vector<float> paddle_coords(paddle_vertices.begin(), paddle_vertices.end());
     renderer->init_paddle(paddle_coords);
 }
-AirHockey::~AirHockey()
+AirHockey::AirHockey::~AirHockey()
 {
 }
 
-void AirHockey::loop()
+void AirHockey::AirHockey::loop()
 {
     SDL_Event e;
     bool quit = false;
-    std::vector<float> paddle_vec(paddle_vertices.size());
-    std::vector<float> puck_vec(puck_vertices.size());
+    std::vector<float> paddle_vec(paddle_vertices.begin(), paddle_vertices.end());
+    std::vector<float> puck_vec(puck_vertices.begin(), puck_vertices.end());
     while (1) {
         while (SDL_PollEvent(&e)) {
             switch (e.type) {

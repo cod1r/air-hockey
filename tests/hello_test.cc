@@ -3,5 +3,5 @@
 #include "../src/OpenGLFunctions.h"
 #include "../src/AirHockey.h"
 TEST(INIT, Testing_AirHockey_Setup) {
-    AirHockey ah;
+    AirHockey::AirHockey ah;
 }

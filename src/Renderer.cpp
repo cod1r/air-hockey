@@ -8,7 +8,7 @@
 #include <filesystem>
 #include <string>
 #include <array>
-Renderer::Renderer()
+Renderer::Renderer::Renderer()
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         std::cout << SDL_GetError() << std::endl;
@@ -24,7 +24,7 @@ Renderer::Renderer()
         std::cout << SDL_GetError() << std::endl;
         throw;
     }
-    glFunctions = new OpenGLFunctions();
+    glFunctions = new OpenGLFunctions::OpenGLFunctions();
     read_shaders();
     GLuint puck_program = glFunctions->glCreateProgram();
     glFunctions->glAttachShader(puck_program, vshdr);
@@ -37,19 +37,19 @@ Renderer::Renderer()
     glFunctions->glLinkProgram(paddle_program);
     programs.push_back(paddle_program);
 }
-void Renderer::render()
+void Renderer::Renderer::render()
 {
     glFunctions->glClearColor(1, 1, 1, 1);
     glFunctions->glClear(GL_COLOR_BUFFER_BIT);
     glFunctions->glUseProgram(programs.at(PUCK_IDX));
     glFunctions->glBindVertexArray(vaos.at(PUCK_IDX));
-    glFunctions->glDrawElements(GL_TRIANGLES, NUM_SIDES * 3, GL_UNSIGNED_INT, 0);
+    glFunctions->glDrawElements(GL_TRIANGLES, AirHockey::NUM_SIDES * 3, GL_UNSIGNED_INT, 0);
     glFunctions->glUseProgram(programs.at(PADDLE_IDX));
     glFunctions->glBindVertexArray(vaos.at(PADDLE_IDX));
-    glFunctions->glDrawElements(GL_TRIANGLES, NUM_SIDES * 3, GL_UNSIGNED_INT, 0);
+    glFunctions->glDrawElements(GL_TRIANGLES, AirHockey::NUM_SIDES * 3, GL_UNSIGNED_INT, 0);
     SDL_GL_SwapWindow(window);
 }
-void Renderer::read_shaders()
+void Renderer::Renderer::read_shaders()
 {
     std::filesystem::path vsh_path(std::string("shaders/vtx.glsl"));
     std::ifstream vsh;
@@ -102,7 +102,7 @@ void Renderer::read_shaders()
     }
     fsh.close();
 }
-void Renderer::init_puck(std::vector<float> &coords)
+void Renderer::Renderer::init_puck(std::vector<float> &coords)
 {
     GLuint VAO;
     glFunctions->glGenVertexArrays(1, &VAO);
@@ -137,17 +137,17 @@ void Renderer::init_puck(std::vector<float> &coords)
     glFunctions->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     ebos.push_back(std::vector<GLuint>{ebo});
 
-    std::array<int, NUM_SIDES * 3> vertices{{}};
+    std::array<int, AirHockey::NUM_SIDES * 3> vertices{{}};
     int counter = 0;
     for (int i = 0; i < vertices.size(); i += 3) {
         vertices[i] = counter;
         vertices[i + 1] = counter + 1;
-        vertices[i + 2] = NUM_VERTICES / 2 - 1;
+        vertices[i + 2] = AirHockey::NUM_VERTICES / 2 - 1;
         counter += 1;
     }
     glFunctions->glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
 }
-void Renderer::init_paddle(std::vector<float> &coords)
+void Renderer::Renderer::init_paddle(std::vector<float> &coords)
 {
     GLuint VAO;
     glFunctions->glGenVertexArrays(1, &VAO);
@@ -182,29 +182,29 @@ void Renderer::init_paddle(std::vector<float> &coords)
     glFunctions->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     ebos.push_back(std::vector<GLuint>{ebo});
 
-    std::array<int, NUM_SIDES * 3> vertices{{}};
+    std::array<int, AirHockey::NUM_SIDES * 3> vertices{{}};
     int counter = 0;
     for (int i = 0; i < vertices.size(); i += 3) {
         vertices[i] = counter;
         vertices[i + 1] = counter + 1;
-        vertices[i + 2] = NUM_VERTICES / 2 - 1;
+        vertices[i + 2] = AirHockey::NUM_VERTICES / 2 - 1;
         counter += 1;
     }
     glFunctions->glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
 }
-void Renderer::update_puck_coords(std::vector<float> &coords)
+void Renderer::Renderer::update_puck_coords(std::vector<float> &coords)
 {
     glFunctions->glBindVertexArray(vaos.at(PUCK_IDX));
     glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(PUCK_IDX).at(0));
     glFunctions->glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * coords.size(), coords.data());
 }
-void Renderer::update_paddle_coords(std::vector<float> &coords)
+void Renderer::Renderer::update_paddle_coords(std::vector<float> &coords)
 {
     glFunctions->glBindVertexArray(vaos.at(PADDLE_IDX));
     glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(PADDLE_IDX).at(0));
     glFunctions->glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * coords.size(), coords.data());
 }
-void Renderer::load_assets()
+void Renderer::Renderer::load_assets()
 {
     std::filesystem::path texture_atlas_path(std::string("assets/puck.qoi"));
     SDL_RWops *src = SDL_RWFromFile(texture_atlas_path.c_str(), "rb");
@@ -214,7 +214,7 @@ void Renderer::load_assets()
     }
     texture_atlas = IMG_LoadQOI_RW(src);
 }
-Renderer::~Renderer()
+Renderer::Renderer::~Renderer()
 {
     SDL_DestroyWindow(window);
     SDL_Quit();
