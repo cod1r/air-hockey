@@ -3,6 +3,6 @@
 #include "AirHockey.h"
 int main()
 {
-    AirHockey::AirHockey ah = AirHockey::AirHockey();
+    AirHockey ah = AirHockey();
     ah.loop();
 }
