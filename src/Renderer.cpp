@@ -1,6 +1,7 @@
 #include "OpenGLFunctions.h"
 #include "Renderer.h"
 #include "AirHockey.h"
+#include "constants.h"
 #include <GL/gl.h>
 #include <iostream>
 #include <fstream>

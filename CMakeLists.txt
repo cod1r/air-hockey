@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 project(air-hockey)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-add_executable(air_hockey src/main.cpp src/AirHockey.cpp src/Renderer.cpp src/OpenGLFunctions.cpp)
+add_executable(air_hockey src/main.cpp src/AirHockey.cpp src/Renderer.cpp src/OpenGLFunctions.cpp src/Puck.cpp src/Paddle.cpp)
 target_link_libraries(air_hockey GL SDL2 SDL2_image)
 target_compile_options(air_hockey BEFORE PUBLIC -Wfatal-errors)
 file(COPY shaders DESTINATION .)
@@ -21,6 +21,8 @@ add_executable(
   src/AirHockey.cpp
   src/Renderer.cpp
   src/OpenGLFunctions.cpp
+	src/Puck.cpp
+	src/Paddle.cpp
 )
 target_link_libraries(
   hello_test

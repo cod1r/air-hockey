@@ -7,8 +7,6 @@
 class Puck;
 class Paddle;
 class Renderer;
-static const int NUM_SIDES = 32;
-static const int NUM_VERTICES = (NUM_SIDES + 2) * 2;
 class AirHockey {
 public:
     Puck *puck;
