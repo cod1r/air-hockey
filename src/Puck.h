@@ -9,7 +9,7 @@ class Puck {
     public:
     Puck();
     ~Puck();
-    float facing_angle;
+    float facing_angle_radians;
     float velocity_x = 0.0f;
     float velocity_y = 0.0f;
     float acceleration = 0.0f;

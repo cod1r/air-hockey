@@ -37,10 +37,14 @@ void AirHockey::loop()
                 } break;
                 case SDL_FINGERMOTION:
                 case SDL_MOUSEMOTION: {
+                    float old_paddle_x = paddle->vec[0];
+                    float old_paddle_y = paddle->vec[1];
                     for (int i = 0; i < paddle->vertices.size(); i += 2) {
                         paddle->vec[i] = paddle->vertices[i] -(500 - e.motion.x) / 500.0f;
                         paddle->vec[i + 1] = paddle->vertices[i + 1] + (500 - e.motion.y) / 500.0f;
                     }
+                    float diff_paddle_x = old_paddle_x - paddle->vec[0];
+                    float diff_paddle_y = old_paddle_y - paddle->vec[1];
                     bool collided = false;
                     for (int i = 0; i < puck->vertices.size() - 2; i += 2) {
                         float diff_x = std::pow(paddle->vec[i] - puck->vertices[puck->vertices.size() - 2], 2);
@@ -63,16 +67,20 @@ void AirHockey::loop()
                                 index_of_closest = idx;
                             }
                         }
-                        puck->velocity_x = -(500 - e.motion.x) / 500.0f;
-                        puck->velocity_y = (500 - e.motion.y) / 500.0f;
-                        puck->update();
-                        renderer->update_puck_coords(puck->vec);
+                        float diff_x = puck->vertices[puck->vertices.size() - 2] - paddle->vec[index_of_closest];
+                        float diff_y = puck->vertices[puck->vertices.size() - 1] - paddle->vec[index_of_closest + 1];
+                        float mag_of_close_point_and_center = std::sqrt(std::pow(diff_x, 2) + std::pow(diff_y, 2));
+                        float magnitude = std::sqrt(std::pow(diff_paddle_x, 2.0f) + std::pow(diff_paddle_y, 2.0f));
+                        puck->velocity_x = (diff_x / mag_of_close_point_and_center) * magnitude;
+                        puck->velocity_y = (diff_y / mag_of_close_point_and_center) * magnitude;
                     }
-                    renderer->update_paddle_coords(paddle->vec);
                 } break;
             }
         }
         if (quit) break;
+        puck->update();
+        renderer->update_puck_coords(puck->vec);
+        renderer->update_paddle_coords(paddle->vec);
         renderer->render();
     }
 }
