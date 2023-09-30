@@ -9,6 +9,7 @@ class Paddle;
 class Renderer;
 class AirHockey {
 public:
+    Puck *puck_inter;
     Puck *puck;
     Paddle *paddle;
     Renderer *renderer = nullptr;

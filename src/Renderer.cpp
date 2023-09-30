@@ -15,7 +15,7 @@ Renderer::Renderer()
         std::cout << SDL_GetError() << std::endl;
         throw;
     }
-    window = SDL_CreateWindow("AirHockey", 0, 0, 1000, 1000, SDL_WINDOW_OPENGL | SDL_WINDOW_BORDERLESS | SDL_WINDOW_INPUT_GRABBED | SDL_WINDOW_ALLOW_HIGHDPI);
+    window = SDL_CreateWindow("AirHockey", 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_BORDERLESS | SDL_WINDOW_INPUT_GRABBED | SDL_WINDOW_ALLOW_HIGHDPI);
     if (window == NULL) {
         std::cout << SDL_GetError() << std::endl;
         throw;
@@ -42,9 +42,17 @@ void Renderer::render()
 {
     glFunctions->glClearColor(1, 1, 1, 1);
     glFunctions->glClear(GL_COLOR_BUFFER_BIT);
+
     glFunctions->glUseProgram(programs.at(PUCK_IDX));
     glFunctions->glBindVertexArray(vaos.at(PUCK_IDX));
     glFunctions->glDrawElements(GL_TRIANGLES, NUM_SIDES * 3, GL_UNSIGNED_INT, 0);
+
+
+    glFunctions->glUseProgram(programs.at(PUCK_IDX));
+    glFunctions->glBindVertexArray(vaos.at(2));
+    glFunctions->glDrawElements(GL_TRIANGLES, NUM_SIDES * 3, GL_UNSIGNED_INT, 0);
+
+
     glFunctions->glUseProgram(programs.at(PADDLE_IDX));
     glFunctions->glBindVertexArray(vaos.at(PADDLE_IDX));
     glFunctions->glDrawElements(GL_TRIANGLES, NUM_SIDES * 3, GL_UNSIGNED_INT, 0);
@@ -140,7 +148,7 @@ void Renderer::init_puck(std::vector<float> &coords)
 
     std::array<int, NUM_SIDES * 3> vertices{{}};
     int counter = 0;
-    for (int i = 0; i < vertices.size(); i += 3) {
+    for (int i = 0; i < (int)vertices.size(); i += 3) {
         vertices[i] = counter;
         vertices[i + 1] = counter + 1;
         vertices[i + 2] = NUM_VERTICES / 2 - 1;
@@ -185,13 +193,19 @@ void Renderer::init_paddle(std::vector<float> &coords)
 
     std::array<int, NUM_SIDES * 3> vertices{{}};
     int counter = 0;
-    for (int i = 0; i < vertices.size(); i += 3) {
+    for (int i = 0; i < (int)vertices.size(); i += 3) {
         vertices[i] = counter;
         vertices[i + 1] = counter + 1;
         vertices[i + 2] = NUM_VERTICES / 2 - 1;
         counter += 1;
     }
     glFunctions->glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+}
+void Renderer::update_puck_inter_coords(std::vector<float> &coords)
+{
+    glFunctions->glBindVertexArray(vaos.at(2));
+    glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(2).at(0));
+    glFunctions->glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * coords.size(), coords.data());
 }
 void Renderer::update_puck_coords(std::vector<float> &coords)
 {

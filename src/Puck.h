@@ -10,10 +10,10 @@ class Puck {
     Puck();
     ~Puck();
     float facing_angle_radians;
-    float velocity_x = 0.0f;
-    float velocity_y = 0.0f;
-    float acceleration = 0.0f;
-    std::array<float, NUM_VERTICES> vertices = generate_circle_verts(PUCK_RADIUS);
+    float velocity_x;
+    float velocity_y;
+    float acceleration;
+    std::array<float, NUM_VERTICES> vertices = generate_circle_verts(PUCK_RADIUS, 0.0f);
     std::vector<float> vec;
     void update();
 };

@@ -25,6 +25,7 @@ public:
     void init_paddle(std::vector<float> &);
     void update_puck_coords(std::vector<float> &);
     void update_paddle_coords(std::vector<float> &);
+    void update_puck_inter_coords(std::vector<float> &);
     void load_assets();
 };
 #endif
