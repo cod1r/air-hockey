@@ -48,9 +48,9 @@ void Renderer::render()
     glFunctions->glDrawElements(GL_TRIANGLES, NUM_SIDES * 3, GL_UNSIGNED_INT, 0);
 
 
-    glFunctions->glUseProgram(programs.at(PUCK_IDX));
-    glFunctions->glBindVertexArray(vaos.at(2));
-    glFunctions->glDrawElements(GL_TRIANGLES, NUM_SIDES * 3, GL_UNSIGNED_INT, 0);
+    //glFunctions->glUseProgram(programs.at(PUCK_IDX));
+    //glFunctions->glBindVertexArray(vaos.at(2));
+    //glFunctions->glDrawElements(GL_TRIANGLES, NUM_SIDES * 3, GL_UNSIGNED_INT, 0);
 
 
     glFunctions->glUseProgram(programs.at(PADDLE_IDX));

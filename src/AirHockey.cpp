@@ -8,9 +8,10 @@
 #include <format>
 #include <filesystem>
 #include <cassert>
+#include <numbers>
 AirHockey::AirHockey()
 {
-    puck_inter = new Puck();
+    //puck_inter = new Puck();
     puck = new Puck();
     paddle = new Paddle();
     renderer = new Renderer();
@@ -28,6 +29,7 @@ void AirHockey::loop()
 {
     SDL_Event e;
     bool quit = false;
+    bool flip = false;
     while (1) {
         bool mouse_ev = false;
         while (SDL_PollEvent(&e)) {
@@ -36,6 +38,12 @@ void AirHockey::loop()
                     switch (e.key.keysym.sym) {
                         case SDLK_q: {
                             quit = true;
+                        }
+                        case SDLK_s: {
+                            puck->velocity_x = 0.0f;
+                            puck->velocity_y = 0.0f;
+                            puck->vertices = generate_circle_verts(PUCK_RADIUS, 0.0f);
+                            puck->update();
                         }
                     }
                 } break;
@@ -46,6 +54,8 @@ void AirHockey::loop()
                 } break;
             }
         }
+        //paddle->update(flip ? -(250 - 500.0f)/500.0f : (250 - 500.0f)/500.0f, flip ? -(750 - 500.0f)/ 500.0f : (750 - 500.0f) / 500.0f);
+        //flip = !flip;
         if (quit) break;
         bool collided = false;
         float prev_y_paddle = paddle->vec[paddle->vec.size() - 1] - paddle->velocity_y;
@@ -58,10 +68,47 @@ void AirHockey::loop()
         && ((prev_y_paddle - PADDLE_RADIUS <= puck->vertices[puck->vertices.size() - 1] - PUCK_RADIUS && puck->vertices[puck->vertices.size() - 1] + PUCK_RADIUS <= paddle->vec[paddle->vec.size() - 1] + PADDLE_RADIUS)
         || (prev_y_paddle - PADDLE_RADIUS >= puck->vertices[puck->vertices.size() - 1] - PUCK_RADIUS && puck->vertices[puck->vertices.size() - 1] + PUCK_RADIUS >= paddle->vec[paddle->vec.size() - 1] + PADDLE_RADIUS)))
         || (distance_between_two_centers <= PUCK_RADIUS + PADDLE_RADIUS)) {
-            if (puck->velocity_y > 0 && puck->velocity_x > 0 && paddle->velocity_y > 0 && paddle->velocity_x > 0) {
-            } else if (paddle->velocity_x > 0 || paddle->velocity_y > 0) {
+            std::cerr << paddle->velocity_y << " " << paddle->velocity_x << std::endl;
+            if (puck->velocity_y != 0 && puck->velocity_x != 0 && paddle->velocity_y != 0 && paddle->velocity_x != 0) {
+            } else if (paddle->velocity_x != 0 || paddle->velocity_y != 0) {
                 if (paddle->velocity_x == 0) {
+                    float x_diff = puck->vertices[puck->vertices.size() - 2] - paddle->vec[paddle->vec.size() - 2];
+                    if (x_diff != 0.0f) {
+                        float b_length = std::sqrt(std::pow(PUCK_RADIUS + PADDLE_RADIUS, 2.0f) - std::pow(x_diff, 2.0f));
+                        float y_collision_paddle = puck->vertices[puck->vertices.size() - 1] - b_length;
+                        float collide_slope = (puck->vertices[puck->vertices.size() - 1] - y_collision_paddle) / (puck->vertices[puck->vertices.size() - 2] - prev_x_paddle);
+                        float magnitude = std::sqrt(std::pow(paddle->velocity_x, 2.0f) + std::pow(paddle->velocity_y, 2.0f));
+                        puck->velocity_x = std::cos(std::atan(collide_slope)) * magnitude;
+                        puck->velocity_y = std::sin(std::atan(collide_slope)) * magnitude;
+                        if ((puck->vertices[puck->vertices.size() - 2] < prev_x_paddle && puck->velocity_x > 0.0f)
+                            ||(puck->vertices[puck->vertices.size() - 2] > prev_x_paddle && puck->velocity_x < 0.0f)) {
+                            puck->velocity_x = -puck->velocity_x;
+                        }
+                        if ((puck->vertices[puck->vertices.size() - 1] < prev_y_paddle && puck->velocity_y > 0.0f) || (puck->vertices[puck->vertices.size() - 1] > prev_y_paddle && puck->velocity_y < 0.0f)) {
+                            puck->velocity_y = -puck->velocity_y;
+                        }
+                    } else {
+                        throw "TODO";
+                    }
                 } else if (paddle->velocity_y == 0) {
+                    float y_diff = puck->vertices[puck->vertices.size() - 1] - paddle->vec[paddle->vec.size() - 1];
+                    if (y_diff != 0.0f) {
+                        float b_length = std::sqrt(std::pow(PUCK_RADIUS + PADDLE_RADIUS, 2.0f) - std::pow(y_diff, 2.0f));
+                        float x_collision_paddle = puck->vertices[puck->vertices.size() - 2] - b_length;
+                        float collide_slope = (puck->vertices[puck->vertices.size() - 1] - prev_y_paddle) / (puck->vertices[puck->vertices.size() - 2] - x_collision_paddle);
+                        float magnitude = std::sqrt(std::pow(paddle->velocity_x, 2.0f) + std::pow(paddle->velocity_y, 2.0f));
+                        puck->velocity_x = std::cos(std::atan(collide_slope)) * magnitude;
+                        puck->velocity_y = std::sin(std::atan(collide_slope)) * magnitude;
+                        if ((puck->vertices[puck->vertices.size() - 2] < prev_x_paddle && puck->velocity_x > 0.0f)
+                            ||(puck->vertices[puck->vertices.size() - 2] > prev_x_paddle && puck->velocity_x < 0.0f)) {
+                            puck->velocity_x = -puck->velocity_x;
+                        }
+                        if ((puck->vertices[puck->vertices.size() - 1] < prev_y_paddle && puck->velocity_y > 0.0f) || (puck->vertices[puck->vertices.size() - 1] > prev_y_paddle && puck->velocity_y < 0.0f)) {
+                            puck->velocity_y = -puck->velocity_y;
+                        }
+                    } else {
+                        throw "TODO";
+                    }
                 } else {
                     float slope_paddle = paddle->velocity_y / paddle->velocity_x;
                     float y_offset_paddle = prev_y_paddle - slope_paddle * prev_x_paddle;
@@ -76,41 +123,27 @@ void AirHockey::loop()
                         if (length_1 > 0.0f) {
                             float length_3 = std::sqrt(std::pow(PUCK_RADIUS + PADDLE_RADIUS, 2.0f) - std::pow(length_1, 2.0f));
                             float length_x = std::cos(std::atan(slope_paddle)) * length_3;
-                            if (prev_x_paddle < puck->vertices[puck->vertices.size() - 2]) {
-                                length_x = -length_x;
-                            }
                             collision_paddle_x = x_intersection + length_x;
                             collision_paddle_y = slope_paddle * collision_paddle_x + y_offset_paddle;
-
-                            puck_inter->vec = std::vector<float>(puck_inter->vertices.begin(), puck_inter->vertices.end());
                         } else {
                             float x_offset = std::cos(std::atan(slope_paddle)) * (PUCK_RADIUS + PADDLE_RADIUS);
-                            if (prev_x_paddle < puck->vertices[puck->vertices.size() - 2]) {
-                                x_offset = -x_offset;
-                            }
                             collision_paddle_x = puck->vertices[puck->vertices.size() - 2] + x_offset;
                             collision_paddle_y = slope_paddle * collision_paddle_x + y_offset_paddle;
                         }
                         float collide_slope = (collision_paddle_y - puck->vertices[puck->vertices.size() - 1]) / (collision_paddle_x - puck->vertices[puck->vertices.size() - 2]);
-                        float x_puck_collide_offset = std::cos(std::atan(collide_slope)) * PUCK_RADIUS;
-                        if (prev_x_paddle < puck->vertices[puck->vertices.size() - 2]) {
-                            x_puck_collide_offset = -x_puck_collide_offset;
-                        }
-                        float x_puck_collision = puck->vertices[puck->vertices.size() - 2] + x_puck_collide_offset;
-                        float y_puck_collide_offset = puck->vertices[puck->vertices.size() - 1] - collide_slope * puck->vertices[puck->vertices.size() - 2];
-                        float y_puck_collision = collide_slope * x_puck_collision + y_puck_collide_offset;
-
-                        float diff_x = puck->vertices[puck->vertices.size() - 2] - x_puck_collision;
-                        float diff_y = puck->vertices[puck->vertices.size() - 1] - y_puck_collision;
-                        float mag_of_close_point_and_center = std::sqrt(std::pow(diff_x, 2) + std::pow(diff_y, 2));
                         float magnitude = std::sqrt(std::pow(paddle->velocity_x, 2.0f) + std::pow(paddle->velocity_y, 2.0f));
-                        if (mag_of_close_point_and_center > 0) {
-                            puck->velocity_x = (diff_x / mag_of_close_point_and_center) * magnitude ;
-                            puck->velocity_y = (diff_y / mag_of_close_point_and_center) * magnitude ;
+                        puck->velocity_x = std::cos(std::atan(collide_slope)) * magnitude;
+                        puck->velocity_y = std::sin(std::atan(collide_slope)) * magnitude;
+                        if ((puck->vertices[puck->vertices.size() - 2] < prev_x_paddle && puck->velocity_x > 0.0f)
+                            ||(puck->vertices[puck->vertices.size() - 2] > prev_x_paddle && puck->velocity_x < 0.0f)) {
+                            puck->velocity_x = -puck->velocity_x;
+                        }
+                        if ((puck->vertices[puck->vertices.size() - 1] < prev_y_paddle && puck->velocity_y > 0.0f) || (puck->vertices[puck->vertices.size() - 1] > prev_y_paddle && puck->velocity_y < 0.0f)) {
+                            puck->velocity_y = -puck->velocity_y;
                         }
                     }
                 }
-            } else if (puck->velocity_x > 0 || puck->velocity_y > 0) {
+            } else if (puck->velocity_x != 0 || puck->velocity_y != 0) {
             }
         }
         if (!mouse_ev) {
@@ -119,7 +152,6 @@ void AirHockey::loop()
         }
         puck->update();
         renderer->update_puck_coords(puck->vec);
-        renderer->update_puck_inter_coords(puck_inter->vec);
         renderer->update_paddle_coords(paddle->vec);
         renderer->render();
     }

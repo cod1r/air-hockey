@@ -15,24 +15,19 @@ void Puck::update()
     float add_amt_x = velocity_x;
     float add_amt_y = velocity_y;
     for (int i = 0; i < (int)vertices.size(); i += 2) {
-        if (vertices[i] + velocity_x >= 1.0f ||
-                vertices[i + 1] + velocity_y >= 1.0f ||
-                vertices[i] + velocity_x <= -1.0f ||
-                vertices[i + 1] + velocity_y <= -1.0f) {
-            if (vertices[i] + velocity_x >= 1.0f) {
-                add_amt_x = std::min(add_amt_x, 1.0f - velocity_x);
-                velocity_x = -velocity_x;
-            } else if (vertices[i] + velocity_x <= -1.0f) {
-                add_amt_x = std::min(add_amt_x, -(-1.0f - velocity_x));
-                velocity_x = -velocity_x;
-            }
-            if (vertices[i + 1] + velocity_y >= 1.0f) {
-                add_amt_y = std::min(add_amt_y, 1.0f - velocity_y);
-                velocity_y = -velocity_y;
-            } else if (vertices[i + 1] + velocity_y <= -1.0f) {
-                add_amt_y = std::min(add_amt_y, -(-1.0f - velocity_y));
-                velocity_y = -velocity_y;
-            }
+        if (vertices[i] + velocity_x >= 1.0f) {
+            add_amt_x = std::min(add_amt_x, 1.0f - (vertices[i] + PUCK_RADIUS));
+            velocity_x = -velocity_x;
+        } else if (vertices[i] + velocity_x <= -1.0f) {
+            add_amt_x = std::min(add_amt_x, (-1.0f - (vertices[i] - PUCK_RADIUS)));
+            velocity_x = -velocity_x;
+        }
+        if (vertices[i + 1] + velocity_y >= 1.0f) {
+            add_amt_y = std::min(add_amt_y, 1.0f - (vertices[i + 1] + PUCK_RADIUS));
+            velocity_y = -velocity_y;
+        } else if (vertices[i + 1] + velocity_y <= -1.0f) {
+            add_amt_y = std::min(add_amt_y, (-1.0f - (vertices[i + 1] - PUCK_RADIUS)));
+            velocity_y = -velocity_y;
         }
     }
     for (int i = 0; i < (int)vertices.size(); i += 2) {
