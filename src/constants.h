@@ -1,8 +1,8 @@
 #ifndef _CONSTANTS_H
 #define _CONSTANTS_H
+#include <array>
 #include <cmath>
 #include <numbers>
-#include <array>
 static const int NUM_SIDES = 32;
 static const int NUM_VERTICES = (NUM_SIDES + 2) * 2;
 static const float COEFFICIENT_OF_FRICTION_STATIC = 0.03f;

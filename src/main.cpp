@@ -1,8 +1,7 @@
-#include <iostream>
-#include <SDL2/SDL.h>
 #include "AirHockey.h"
-int main()
-{
-    AirHockey ah = AirHockey();
-    ah.loop();
+#include <SDL2/SDL.h>
+#include <iostream>
+int main() {
+  AirHockey ah = AirHockey();
+  ah.loop();
 }

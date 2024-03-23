@@ -10,13 +10,14 @@ class Paddle;
 class Renderer;
 class AirHockey {
 public:
-    Puck *puck_inter;
-    Puck *puck;
-    Paddle *paddle;
-    Renderer *renderer = nullptr;
-    AirHockey();
-    ~AirHockey();
-    void loop();
+  Puck *puck_inter;
+  Puck *puck;
+  Paddle *paddle;
+  Renderer *renderer = nullptr;
+  AirHockey();
+  ~AirHockey();
+  void loop();
 };
-std::array<float, NUM_VERTICES> generate_circle_verts(float radius, float offset);
+std::array<float, NUM_VERTICES> generate_circle_verts(float radius,
+                                                      float offset);
 #endif
