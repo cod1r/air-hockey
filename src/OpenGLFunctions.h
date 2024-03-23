@@ -1,5 +1,13 @@
 #include <SDL2/SDL.h>
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#endif
+#ifdef __LINUX__
 #include <GL/gl.h>
+#endif
+#ifdef __WINDOWS__
+#include <gl/GL.h>
+#endif
 #ifndef _OPENGL_FUNCTIONS_H
 #define _OPENGL_FUNCTIONS_H
 class OpenGLFunctions {

@@ -2,7 +2,6 @@
 #include "Renderer.h"
 #include "AirHockey.h"
 #include "constants.h"
-#include <GL/gl.h>
 #include <iostream>
 #include <fstream>
 #include <SDL2/SDL_image.h>

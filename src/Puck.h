@@ -13,7 +13,7 @@ class Puck {
     float velocity_x;
     float velocity_y;
     float acceleration;
-    std::array<float, NUM_VERTICES> vertices = generate_circle_verts(PUCK_RADIUS, 0.0f);
+    std::array<float, NUM_VERTICES> vertices;
     std::vector<float> vec;
     void update();
 };

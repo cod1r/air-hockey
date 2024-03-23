@@ -1,7 +1,7 @@
 #ifndef _RENDERER_H
 #define _RENDERER_H
 #include <vector>
-#include <GL/gl.h>
+#include "OpenGLFunctions.h"
 #include <SDL2/SDL.h>
 class OpenGLFunctions;
 static const int PUCK_IDX = 0;

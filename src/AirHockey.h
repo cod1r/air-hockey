@@ -1,5 +1,6 @@
 #ifndef _AIR_HOCKEY_H
 #define _AIR_HOCKEY_H
+#include "constants.h"
 #include <SDL2/SDL.h>
 #include <array>
 #include <cmath>
@@ -17,4 +18,5 @@ public:
     ~AirHockey();
     void loop();
 };
+std::array<float, NUM_VERTICES> generate_circle_verts(float radius, float offset);
 #endif

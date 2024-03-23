@@ -1,10 +1,12 @@
 #include "Paddle.h"
+#include "AirHockey.h"
 #include <vector>
 #include <iostream>
 
 Paddle::Paddle()
 {
     vec = std::vector<float>(vertices.begin(), vertices.end());
+    vertices = generate_circle_verts(PADDLE_RADIUS, 0.5f);
     velocity_x = 0.0f;
     velocity_y = 0.0f;
 }
