@@ -1,7 +1,6 @@
-#version 330 core
+#version 120
 uniform vec4 color;
-out vec4 out_color;
 void main()
 {
-    out_color = color;
+    gl_FragColor = color;
 }

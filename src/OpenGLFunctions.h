@@ -12,6 +12,7 @@
 #define _OPENGL_FUNCTIONS_H
 class OpenGLFunctions {
 public:
+  GLubyte *(*glGetString)(int);
   void (*glGenBuffers)(int, GLuint *);
   void (*glGenVertexArrays)(GLsizei, GLuint *);
   void (*glBindVertexArray)(GLuint);

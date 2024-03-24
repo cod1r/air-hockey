@@ -58,17 +58,22 @@ void Renderer::render() {
   SDL_GL_SwapWindow(window);
 }
 void Renderer::read_shaders() {
+  std::cerr << "OPENGL VERSION: " << glFunctions->glGetString(GL_VERSION) << std::endl;
   std::filesystem::path vsh_path(std::string("shaders/vtx.glsl"));
   std::ifstream vsh;
   vsh.open(vsh_path.c_str());
   if (vsh.is_open()) {
+    std::cerr << "Reading vertex shader\n";
     std::string vshdr_contents;
+    int count = 0;
     while (!vsh.eof()) {
       vshdr_contents += vsh.get();
+      count++;
     }
     vshdr = glFunctions->glCreateShader(GL_VERTEX_SHADER);
     const GLchar *shdr_cstr = vshdr_contents.c_str();
-    glFunctions->glShaderSource(vshdr, 1, &shdr_cstr, NULL);
+    int sizes[] = { (int)vshdr_contents.length() - 1 };
+    glFunctions->glShaderSource(vshdr, 1, &shdr_cstr, sizes);
     glFunctions->glCompileShader(vshdr);
     GLint status;
     glFunctions->glGetShaderiv(vshdr, GL_COMPILE_STATUS, &status);
@@ -77,23 +82,27 @@ void Renderer::read_shaders() {
       GLchar buffer[1024];
       glFunctions->glGetShaderInfoLog(vshdr, 1024, &length, buffer);
       std::cerr << buffer << std::endl;
+      throw;
     }
   } else {
     std::cerr << "vertex shader could not be opened" << std::endl;
     throw;
   }
   vsh.close();
+  std::cerr << "DONE READING VERTEX SHADER\n";
   std::filesystem::path fsh_path(std::string("shaders/frag.glsl"));
   std::ifstream fsh;
   fsh.open(fsh_path.c_str());
   if (fsh.is_open()) {
+    std::cerr << "Reading fragment shader\n";
     std::string fshdr_contents;
     while (!fsh.eof()) {
       fshdr_contents += fsh.get();
     }
     fshdr = glFunctions->glCreateShader(GL_FRAGMENT_SHADER);
     const GLchar *shdr_cstr = fshdr_contents.c_str();
-    glFunctions->glShaderSource(fshdr, 1, &shdr_cstr, NULL);
+    int sizes[] = { (int)fshdr_contents.length() - 1 };
+    glFunctions->glShaderSource(fshdr, 1, &shdr_cstr, sizes);
     glFunctions->glCompileShader(fshdr);
     GLint status;
     glFunctions->glGetShaderiv(fshdr, GL_COMPILE_STATUS, &status);
@@ -108,6 +117,7 @@ void Renderer::read_shaders() {
     throw;
   }
   fsh.close();
+  std::cerr << "DONE READING FRAGMENT SHADER\n";
 }
 void Renderer::init_puck(std::vector<float> &coords) {
   GLuint VAO;
