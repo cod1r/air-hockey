@@ -13,7 +13,7 @@ Renderer::Renderer() {
     std::cout << SDL_GetError() << std::endl;
     throw;
   }
-  window = SDL_CreateWindow("AirHockey", 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT,
+  window = SDL_CreateWindow("AirHockey", 0, 0, CONSTANTS::WINDOW_WIDTH, CONSTANTS::WINDOW_HEIGHT,
                             SDL_WINDOW_OPENGL);
   if (window == NULL) {
     std::cout << SDL_GetError() << std::endl;
@@ -43,7 +43,7 @@ void Renderer::render() {
 
   glFunctions->glUseProgram(programs.at(PUCK_IDX));
   glFunctions->glBindVertexArray(vaos.at(PUCK_IDX));
-  glFunctions->glDrawElements(GL_TRIANGLES, NUM_SIDES * 3, GL_UNSIGNED_INT, 0);
+  glFunctions->glDrawElements(GL_TRIANGLES, CONSTANTS::NUM_SIDES * 3, GL_UNSIGNED_INT, 0);
 
   // glFunctions->glUseProgram(programs.at(PUCK_IDX));
   // glFunctions->glBindVertexArray(vaos.at(2));
@@ -52,7 +52,7 @@ void Renderer::render() {
 
   glFunctions->glUseProgram(programs.at(PADDLE_IDX));
   glFunctions->glBindVertexArray(vaos.at(PADDLE_IDX));
-  glFunctions->glDrawElements(GL_TRIANGLES, NUM_SIDES * 3, GL_UNSIGNED_INT, 0);
+  glFunctions->glDrawElements(GL_TRIANGLES, CONSTANTS::NUM_SIDES * 3, GL_UNSIGNED_INT, 0);
   SDL_GL_SwapWindow(window);
 }
 void Renderer::read_shaders() {
@@ -157,12 +157,12 @@ void Renderer::init_puck(std::vector<float> &coords) {
   glFunctions->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
   ebos.push_back(std::vector<GLuint>{ebo});
 
-  std::array<int, NUM_SIDES * 3> vertices{{}};
+  std::array<int, CONSTANTS::NUM_SIDES * 3> vertices{{}};
   int counter = 0;
   for (int i = 0; i < (int)vertices.size(); i += 3) {
     vertices[i] = counter;
     vertices[i + 1] = counter + 1;
-    vertices[i + 2] = NUM_VERTICES / 2 - 1;
+    vertices[i + 2] = CONSTANTS::NUM_VERTICES / 2 - 1;
     counter += 1;
   }
   glFunctions->glBufferData(GL_ELEMENT_ARRAY_BUFFER,
@@ -208,12 +208,12 @@ void Renderer::init_paddle(std::vector<float> &coords) {
   glFunctions->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
   ebos.push_back(std::vector<GLuint>{ebo});
 
-  std::array<int, NUM_SIDES * 3> vertices{{}};
+  std::array<int, CONSTANTS::NUM_SIDES * 3> vertices{{}};
   int counter = 0;
   for (int i = 0; i < (int)vertices.size(); i += 3) {
     vertices[i] = counter;
     vertices[i + 1] = counter + 1;
-    vertices[i + 2] = NUM_VERTICES / 2 - 1;
+    vertices[i + 2] = CONSTANTS::NUM_VERTICES / 2 - 1;
     counter += 1;
   }
   glFunctions->glBufferData(GL_ELEMENT_ARRAY_BUFFER,
