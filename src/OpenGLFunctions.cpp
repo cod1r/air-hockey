@@ -1,6 +1,6 @@
 #include "OpenGLFunctions.h"
 OpenGLFunctions::OpenGLFunctions() {
-  glGetString = (GLubyte *(*)(int))SDL_GL_GetProcAddress("glGetString");
+  glGetString = (GLubyte * (*)(int)) SDL_GL_GetProcAddress("glGetString");
   glGenBuffers = (void (*)(int, GLuint *))SDL_GL_GetProcAddress("glGenBuffers");
   glGenVertexArrays =
       (void (*)(GLsizei, GLuint *))SDL_GL_GetProcAddress("glGenVertexArrays");

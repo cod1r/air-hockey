@@ -13,10 +13,8 @@ Renderer::Renderer() {
     std::cout << SDL_GetError() << std::endl;
     throw;
   }
-  window =
-      SDL_CreateWindow("AirHockey", 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT,
-                       SDL_WINDOW_OPENGL | SDL_WINDOW_BORDERLESS |
-                           SDL_WINDOW_INPUT_GRABBED | SDL_WINDOW_ALLOW_HIGHDPI);
+  window = SDL_CreateWindow("AirHockey", 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT,
+                            SDL_WINDOW_OPENGL);
   if (window == NULL) {
     std::cout << SDL_GetError() << std::endl;
     throw;
@@ -58,7 +56,8 @@ void Renderer::render() {
   SDL_GL_SwapWindow(window);
 }
 void Renderer::read_shaders() {
-  std::cerr << "OPENGL VERSION: " << glFunctions->glGetString(GL_VERSION) << std::endl;
+  std::cerr << "OPENGL VERSION: " << glFunctions->glGetString(GL_VERSION)
+            << std::endl;
   std::filesystem::path vsh_path(std::string("shaders/vtx.glsl"));
   std::ifstream vsh;
   vsh.open(vsh_path.c_str());
@@ -72,7 +71,7 @@ void Renderer::read_shaders() {
     }
     vshdr = glFunctions->glCreateShader(GL_VERTEX_SHADER);
     const GLchar *shdr_cstr = vshdr_contents.c_str();
-    int sizes[] = { (int)vshdr_contents.length() - 1 };
+    int sizes[] = {(int)vshdr_contents.length() - 1};
     glFunctions->glShaderSource(vshdr, 1, &shdr_cstr, sizes);
     glFunctions->glCompileShader(vshdr);
     GLint status;
@@ -101,7 +100,7 @@ void Renderer::read_shaders() {
     }
     fshdr = glFunctions->glCreateShader(GL_FRAGMENT_SHADER);
     const GLchar *shdr_cstr = fshdr_contents.c_str();
-    int sizes[] = { (int)fshdr_contents.length() - 1 };
+    int sizes[] = {(int)fshdr_contents.length() - 1};
     glFunctions->glShaderSource(fshdr, 1, &shdr_cstr, sizes);
     glFunctions->glCompileShader(fshdr);
     GLint status;
