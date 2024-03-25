@@ -41,7 +41,17 @@ void Renderer::render() {
   glFunctions->glClear(GL_COLOR_BUFFER_BIT);
   glFunctions->glClearColor(1, 1, 1, 1);
 
-  glFunctions->glUseProgram(programs.at(PADDLE_IDX));
+  glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(PUCK_IDX).at(0));
+  glFunctions->glVertexAttribPointer(buffer_info.at(PUCK_IDX).attrib_location, 2, GL_FLOAT, GL_FALSE,
+                                       sizeof(float) * 2, 0);
+  glFunctions->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebos.at(PUCK_IDX).at(0));
+  glFunctions->glDrawElements(GL_TRIANGLES, CONSTANTS::NUM_SIDES * 3,
+                              GL_UNSIGNED_INT, 0);
+
+  glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(PADDLE_IDX).at(0));
+  glFunctions->glVertexAttribPointer(buffer_info.at(PADDLE_IDX).attrib_location, 2, GL_FLOAT, GL_FALSE,
+                                       sizeof(float) * 2, 0);
+  glFunctions->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebos.at(PADDLE_IDX).at(0));
   glFunctions->glDrawElements(GL_TRIANGLES, CONSTANTS::NUM_SIDES * 3,
                               GL_UNSIGNED_INT, 0);
   SDL_GL_SwapWindow(window);
@@ -127,9 +137,11 @@ void Renderer::init_puck(std::vector<float> &coords) {
     glFunctions->glVertexAttribPointer(location, 2, GL_FLOAT, GL_FALSE,
                                        sizeof(float) * 2, 0);
     glFunctions->glEnableVertexAttribArray(location);
+    buffer_info.push_back({location});
     vbos.push_back(std::vector<GLuint>{buffer});
   }
   }
+  glFunctions->glUseProgram(programs.at(PUCK_IDX));
   GLint color_location =
       glFunctions->glGetUniformLocation(programs.at(PUCK_IDX), "color");
   if (color_location == -1) {
@@ -173,6 +185,7 @@ void Renderer::init_paddle(std::vector<float> &coords) {
     glFunctions->glVertexAttribPointer(location, 2, GL_FLOAT, false,
                                        sizeof(float) * 2, 0);
     glFunctions->glEnableVertexAttribArray(location);
+    buffer_info.push_back({location});
     vbos.push_back(std::vector<GLuint>{buffer});
   }
   }
@@ -202,19 +215,13 @@ void Renderer::init_paddle(std::vector<float> &coords) {
                             sizeof(int) * vertices.size(), vertices.data(),
                             GL_STATIC_DRAW);
 }
-void Renderer::update_puck_inter_coords(std::vector<float> &coords) {
-  glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(2).at(0));
-  glFunctions->glBufferSubData(GL_ARRAY_BUFFER, 0,
-                               sizeof(float) * coords.size(), coords.data());
-}
 void Renderer::update_puck_coords(std::vector<float> &coords) {
   glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(PUCK_IDX).at(0));
   glFunctions->glBufferSubData(GL_ARRAY_BUFFER, 0,
                                sizeof(float) * coords.size(), coords.data());
 }
 void Renderer::update_paddle_coords(std::vector<float> &coords) {
-  // vbo[0] because not messing with puck for now
-  glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(0).at(0));
+  glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(PADDLE_IDX).at(0));
   glFunctions->glBufferSubData(GL_ARRAY_BUFFER, 0,
                                sizeof(float) * coords.size(), coords.data());
 }

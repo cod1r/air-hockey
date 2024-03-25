@@ -3,7 +3,6 @@
 #include "constants.h"
 #include <array>
 #include <vector>
-static const float PUCK_MASS = 1.0f;
 static const float PUCK_RADIUS = 0.02f;
 class Puck {
 public:

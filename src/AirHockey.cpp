@@ -31,6 +31,7 @@ AirHockey::AirHockey() {
   std::vector<float> puck_coords(puck->vertices.begin(), puck->vertices.end());
   std::vector<float> paddle_coords(paddle->vertices.begin(),
                                    paddle->vertices.end());
+  renderer->init_puck(puck_coords);
   renderer->init_paddle(paddle_coords);
 }
 AirHockey::~AirHockey() {}
@@ -54,9 +55,9 @@ void AirHockey::loop() {
       case SDL_FINGERMOTION:
       case SDL_MOUSEMOTION: {
         mouse_x = (e.motion.x - CONSTANTS::WINDOW_WIDTH / 2.0f) /
-                  ((float)CONSTANTS::WINDOW_WIDTH / 2.0f);
+                  (CONSTANTS::WINDOW_WIDTH / 2.0f);
         mouse_y = -(e.motion.y - CONSTANTS::WINDOW_HEIGHT / 2.0f) /
-                  ((float)CONSTANTS::WINDOW_HEIGHT / 2);
+                  (CONSTANTS::WINDOW_HEIGHT / 2.0);
       } break;
       case SDL_WINDOWEVENT: {
         switch (e.window.event) {
@@ -78,6 +79,8 @@ void AirHockey::loop() {
       float diff_y = (mouse_y - current_center_y) * 0.001f;
       paddle->update(diff_x, diff_y);
     }
+    puck->update();
+    renderer->update_puck_coords(puck->vec);
     renderer->update_paddle_coords(paddle->vec);
     renderer->render();
   }
