@@ -1,11 +1,16 @@
 #include "OpenGLFunctions.h"
 OpenGLFunctions::OpenGLFunctions() {
+  glGetProgramiv = (void (*)(GLuint, GLenum, GLint *))SDL_GL_GetProcAddress(
+      "glGetProgramiv");
+  glGetIntegerv =
+      (void (*)(GLenum, GLint *))SDL_GL_GetProcAddress("glGetIntegerv");
+  glGetActiveUniform =
+      (void (*)(GLuint, GLuint, GLsizei, GLsizei *, GLint *, GLenum *,
+                GLchar *))SDL_GL_GetProcAddress("glGetActiveUniform");
+  glUniform4fv = (void (*)(
+      GLint, GLsizei, const GLfloat *))SDL_GL_GetProcAddress("glUniform4fv");
   glGetString = (GLubyte * (*)(int)) SDL_GL_GetProcAddress("glGetString");
   glGenBuffers = (void (*)(int, GLuint *))SDL_GL_GetProcAddress("glGenBuffers");
-  glGenVertexArrays =
-      (void (*)(GLsizei, GLuint *))SDL_GL_GetProcAddress("glGenVertexArrays");
-  glBindVertexArray =
-      (void (*)(GLuint))SDL_GL_GetProcAddress("glBindVertexArray");
   glIsBuffer = (GLboolean(*)(GLuint))SDL_GL_GetProcAddress("glIsBuffer");
   glIsProgram = (GLboolean(*)(GLuint))SDL_GL_GetProcAddress("glIsProgram");
   glBindBuffer =
@@ -33,6 +38,8 @@ OpenGLFunctions::OpenGLFunctions() {
       (void (*)(GLuint, GLenum, GLint *))SDL_GL_GetProcAddress("glGetShaderiv");
   glClearColor = (void (*)(GLfloat, GLfloat, GLfloat,
                            GLfloat))SDL_GL_GetProcAddress("glClearColor");
+  glGetUniformfv = (void (*)(GLuint, GLint, GLfloat *))SDL_GL_GetProcAddress(
+      "glGetUniformfv");
   glGetUniformiv =
       (void (*)(GLuint, GLint, GLint *))SDL_GL_GetProcAddress("glGetUniformiv");
   glGetUniformLocation = (GLint(*)(

@@ -18,6 +18,6 @@ public:
   ~AirHockey();
   void loop();
 };
-std::array<float, CONSTANTS::NUM_VERTICES> generate_circle_verts(float radius,
-                                                                 float offset);
+std::array<float, CONSTANTS::NUM_VERTICES>
+generate_circle_verts(float radius, float offsetx, float offsety);
 #endif

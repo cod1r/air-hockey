@@ -6,7 +6,7 @@
 
 Puck::Puck() {
   vec = std::vector<float>(vertices.begin(), vertices.end());
-  vertices = generate_circle_verts(PUCK_RADIUS, 0.0f);
+  vertices = generate_circle_verts(PUCK_RADIUS, 0.0f, 0.0f);
   velocity_x = 0.0f;
   velocity_y = 0.0f;
 }

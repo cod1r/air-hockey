@@ -12,10 +12,14 @@
 #define _OPENGL_FUNCTIONS_H
 class OpenGLFunctions {
 public:
+  void (*glGetUniformfv)(GLuint, GLint, GLfloat *);
+  void (*glGetProgramiv)(GLuint, GLenum, GLint *);
+  void (*glGetIntegerv)(GLenum, GLint *);
+  void (*glGetActiveUniform)(GLuint, GLuint, GLsizei, GLsizei *, GLint *,
+                             GLenum *, GLchar *);
   GLubyte *(*glGetString)(int);
+  void (*glUniform4fv)(GLint, GLsizei, const GLfloat *);
   void (*glGenBuffers)(int, GLuint *);
-  void (*glGenVertexArrays)(GLsizei, GLuint *);
-  void (*glBindVertexArray)(GLuint);
   GLboolean (*glIsBuffer)(GLuint);
   GLboolean (*glIsProgram)(GLuint);
   void (*glBindBuffer)(GLenum, GLuint);
