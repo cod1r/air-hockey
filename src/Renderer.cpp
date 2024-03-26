@@ -42,15 +42,17 @@ void Renderer::render() {
   glFunctions->glClearColor(1, 1, 1, 1);
 
   glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(PUCK_IDX).at(0));
-  glFunctions->glVertexAttribPointer(buffer_info.at(PUCK_IDX).attrib_location, 2, GL_FLOAT, GL_FALSE,
-                                       sizeof(float) * 2, 0);
+  glFunctions->glVertexAttribPointer(buffer_info.at(PUCK_IDX).attrib_location,
+                                     2, GL_FLOAT, GL_FALSE, sizeof(float) * 2,
+                                     0);
   glFunctions->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebos.at(PUCK_IDX).at(0));
   glFunctions->glDrawElements(GL_TRIANGLES, CONSTANTS::NUM_SIDES * 3,
                               GL_UNSIGNED_INT, 0);
 
   glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(PADDLE_IDX).at(0));
-  glFunctions->glVertexAttribPointer(buffer_info.at(PADDLE_IDX).attrib_location, 2, GL_FLOAT, GL_FALSE,
-                                       sizeof(float) * 2, 0);
+  glFunctions->glVertexAttribPointer(buffer_info.at(PADDLE_IDX).attrib_location,
+                                     2, GL_FLOAT, GL_FALSE, sizeof(float) * 2,
+                                     0);
   glFunctions->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebos.at(PADDLE_IDX).at(0));
   glFunctions->glDrawElements(GL_TRIANGLES, CONSTANTS::NUM_SIDES * 3,
                               GL_UNSIGNED_INT, 0);

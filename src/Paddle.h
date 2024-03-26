@@ -3,7 +3,7 @@
 #include "constants.h"
 #include <array>
 #include <vector>
-static const float PADDLE_RADIUS = 0.02f * 1.625f;
+static const float PADDLE_RADIUS = 0.05f;
 class Paddle {
 public:
   Paddle();

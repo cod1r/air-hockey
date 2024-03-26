@@ -5,6 +5,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <cassert>
+#include <cmath>
 #include <filesystem>
 #include <format>
 #include <iostream>
@@ -74,10 +75,69 @@ void AirHockey::loop() {
     float current_center_y = paddle->vec[paddle->vec.size() - 1];
     float dist = std::sqrt(std::pow(current_center_x - mouse_x, 2.0f) +
                            std::pow(current_center_y - mouse_y, 2.0f));
+    float diff_x = (mouse_x - current_center_x) * 0.001f;
+    float diff_y = (mouse_y - current_center_y) * 0.001f;
+    auto getting_out_of_collision_or_overlap = [&]() -> bool {
+      float paddle_x_center = paddle->vertices[paddle->vertices.size() - 2];
+      float paddle_y_center = paddle->vertices[paddle->vertices.size() - 1];
+
+      float new_paddle_x_center =
+          paddle->vertices[paddle->vertices.size() - 2] + diff_x;
+      float new_paddle_y_center =
+          paddle->vertices[paddle->vertices.size() - 1] + diff_y;
+      float puck_x_center = puck->vertices[puck->vertices.size() - 2];
+      float puck_y_center = puck->vertices[puck->vertices.size() - 1];
+      float new_dist_between_centers =
+          std::sqrt(std::pow(new_paddle_x_center - puck_x_center, 2.0f) +
+                    std::pow(new_paddle_y_center - puck_y_center, 2.0f));
+      float dist_between_centers =
+          std::sqrt(std::pow(paddle_x_center - puck_x_center, 2.0f) +
+                    std::pow(paddle_y_center - puck_y_center, 2.0f));
+      if (new_dist_between_centers > dist_between_centers) {
+        return true;
+      }
+      return false;
+    };
+    auto collided_or_overlapping = [&]() -> bool {
+      float paddle_x_center = paddle->vertices[paddle->vertices.size() - 2];
+      float paddle_y_center = paddle->vertices[paddle->vertices.size() - 1];
+      float puck_x_center = puck->vertices[puck->vertices.size() - 2];
+      float puck_y_center = puck->vertices[puck->vertices.size() - 1];
+      float dist_between_puck_paddle =
+          std::sqrt(std::pow(paddle_x_center - puck_x_center, 2.0f) +
+                    std::pow(paddle_y_center - puck_y_center, 2.0f));
+      if (dist_between_puck_paddle < PUCK_RADIUS + PADDLE_RADIUS) {
+        return true;
+      }
+      return false;
+    };
     if (dist > 0.001f) {
-      float diff_x = (mouse_x - current_center_x) * 0.001f;
-      float diff_y = (mouse_y - current_center_y) * 0.001f;
-      paddle->update(diff_x, diff_y);
+      if (collided_or_overlapping()) {
+        if (getting_out_of_collision_or_overlap()) {
+          paddle->update(diff_x, diff_y);
+        }
+      } else {
+        paddle->update(diff_x, diff_y);
+      }
+    }
+    if (collided_or_overlapping()) {
+      float center_diff_x = puck->vertices[puck->vertices.size() - 2] -
+                            paddle->vertices[paddle->vertices.size() - 2];
+      float center_diff_y = puck->vertices[puck->vertices.size() - 1] -
+                            paddle->vertices[paddle->vertices.size() - 1];
+      float magnitude =
+          std::sqrt(std::pow(diff_x, 2.0f) + std::pow(diff_y, 2.0f));
+      float angle_radians = ([&]() -> float {
+        float angle = std::acos(center_diff_x / (PUCK_RADIUS + PADDLE_RADIUS));
+        if (center_diff_y > 0.0f) {
+          return angle;
+        }
+        return -angle;
+      })();
+      float magnitude_x = std::cos(angle_radians) * magnitude;
+      float magnitude_y = std::sin(angle_radians) * magnitude;
+      puck->velocity_x = magnitude_x;
+      puck->velocity_y = magnitude_y;
     }
     puck->update();
     renderer->update_puck_coords(puck->vec);
