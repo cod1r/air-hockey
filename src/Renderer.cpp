@@ -2,6 +2,7 @@
 #include "AirHockey.h"
 #include "OpenGLFunctions.h"
 #include "constants.h"
+#include "qoi/qoi.h"
 #include <SDL2/SDL_image.h>
 #include <array>
 #include <filesystem>
@@ -36,6 +37,7 @@ Renderer::Renderer() {
   glFunctions->glAttachShader(paddle_program, fshdr);
   glFunctions->glLinkProgram(paddle_program);
   programs.push_back(paddle_program);
+  load_assets();
 }
 void Renderer::render() {
   glFunctions->glClear(GL_COLOR_BUFFER_BIT);
@@ -228,13 +230,8 @@ void Renderer::update_paddle_coords(std::vector<float> &coords) {
                                sizeof(float) * coords.size(), coords.data());
 }
 void Renderer::load_assets() {
-  std::filesystem::path texture_atlas_path(std::string("assets/puck->qoi"));
-  SDL_RWops *src = SDL_RWFromFile(texture_atlas_path.c_str(), "rb");
-  if (src == NULL) {
-    std::cerr << SDL_GetError() << std::endl;
-    throw;
-  }
-  texture_atlas = IMG_LoadQOI_RW(src);
+  qoi_desc desc;
+  rgba_pixels = (uint8_t*)qoi_read("assets/puck.qoi", &desc, 4);
 }
 Renderer::~Renderer() {
   SDL_DestroyWindow(window);

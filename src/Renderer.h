@@ -58,7 +58,7 @@ class Renderer {
 public:
   OpenGLFunctions *glFunctions = nullptr;
   SDL_Window *window = nullptr;
-  SDL_Surface *texture_atlas = nullptr;
+  uint8_t *rgba_pixels = nullptr;
   Renderer();
   ~Renderer();
   void render();

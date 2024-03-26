@@ -1,5 +1,9 @@
 #include "OpenGLFunctions.h"
 OpenGLFunctions::OpenGLFunctions() {
+  glTexParameterf = (void (*)(GLenum, GLenum, GLfloat))SDL_GL_GetProcAddress(
+      "glTexParameterf");
+  glTexParameteri =
+      (void (*)(GLenum, GLenum, GLint))SDL_GL_GetProcAddress("glTexParameteri");
   glGetProgramiv = (void (*)(GLuint, GLenum, GLint *))SDL_GL_GetProcAddress(
       "glGetProgramiv");
   glGetIntegerv =
