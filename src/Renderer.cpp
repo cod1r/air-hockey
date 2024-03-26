@@ -1,8 +1,8 @@
+#define QOI_IMPLEMENTATION
 #include "Renderer.h"
 #include "AirHockey.h"
 #include "OpenGLFunctions.h"
 #include "constants.h"
-#include "qoi/qoi.h"
 #include <SDL2/SDL_image.h>
 #include <array>
 #include <filesystem>
@@ -123,6 +123,12 @@ void Renderer::read_shaders() {
   fsh.close();
   std::cerr << "DONE READING FRAGMENT SHADER\n";
 }
+void Renderer::init_textures() {
+  GLuint texture;
+  glFunctions->glGenTextures(1, &texture);
+  glFunctions->glBindTexture(GL_TEXTURE_2D, texture);
+  glFunctions->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, desc.width, desc.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgba_pixels);
+}
 void Renderer::init_puck(std::vector<float> &coords) {
   GLuint buffer;
   glFunctions->glGenBuffers(1, &buffer);
@@ -230,7 +236,6 @@ void Renderer::update_paddle_coords(std::vector<float> &coords) {
                                sizeof(float) * coords.size(), coords.data());
 }
 void Renderer::load_assets() {
-  qoi_desc desc;
   rgba_pixels = (uint8_t*)qoi_read("assets/puck.qoi", &desc, 4);
 }
 Renderer::~Renderer() {

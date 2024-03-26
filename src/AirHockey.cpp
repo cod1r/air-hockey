@@ -34,6 +34,7 @@ AirHockey::AirHockey() {
                                    paddle->vertices.end());
   renderer->init_puck(puck_coords);
   renderer->init_paddle(paddle_coords);
+  renderer->init_textures();
 }
 AirHockey::~AirHockey() {}
 

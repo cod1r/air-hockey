@@ -1,6 +1,7 @@
 #ifndef _RENDERER_H
 #define _RENDERER_H
 #include "OpenGLFunctions.h"
+#include "qoi/qoi.h"
 #include <SDL2/SDL.h>
 #include <vector>
 #define GET_GL_ERROR()                                                         \
@@ -51,6 +52,7 @@ class Renderer {
   std::vector<BufferObjectMetaData> buffer_info;
   std::vector<std::vector<GLuint>> vbos;
   std::vector<std::vector<GLuint>> ebos;
+  std::vector<GLuint> textures;
   std::vector<GLuint> programs;
   GLuint vshdr;
   GLuint fshdr;
@@ -58,6 +60,7 @@ class Renderer {
 public:
   OpenGLFunctions *glFunctions = nullptr;
   SDL_Window *window = nullptr;
+  qoi_desc desc;
   uint8_t *rgba_pixels = nullptr;
   Renderer();
   ~Renderer();
@@ -65,6 +68,7 @@ public:
   void read_shaders();
   void init_puck(std::vector<float> &);
   void init_paddle(std::vector<float> &);
+  void init_textures();
   void update_puck_coords(std::vector<float> &);
   void update_paddle_coords(std::vector<float> &);
   void update_puck_inter_coords(std::vector<float> &);
