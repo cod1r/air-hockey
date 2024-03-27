@@ -68,7 +68,6 @@ public:
   void read_shaders();
   void init_puck(std::vector<float> &);
   void init_paddle(std::vector<float> &);
-  void init_textures();
   void update_puck_coords(std::vector<float> &);
   void update_paddle_coords(std::vector<float> &);
   void update_puck_inter_coords(std::vector<float> &);

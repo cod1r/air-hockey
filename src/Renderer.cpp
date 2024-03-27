@@ -123,12 +123,6 @@ void Renderer::read_shaders() {
   fsh.close();
   std::cerr << "DONE READING FRAGMENT SHADER\n";
 }
-void Renderer::init_textures() {
-  GLuint texture;
-  glFunctions->glGenTextures(1, &texture);
-  glFunctions->glBindTexture(GL_TEXTURE_2D, texture);
-  glFunctions->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, desc.width, desc.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgba_pixels);
-}
 void Renderer::init_puck(std::vector<float> &coords) {
   GLuint buffer;
   glFunctions->glGenBuffers(1, &buffer);
@@ -142,7 +136,7 @@ void Renderer::init_puck(std::vector<float> &coords) {
     throw;
   } break;
   default: {
-    glFunctions->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * coords.size(),
+    glFunctions->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * CONSTANTS::NUM_VERTICES,
                               coords.data(), GL_DYNAMIC_DRAW);
     glFunctions->glVertexAttribPointer(location, 2, GL_FLOAT, GL_FALSE,
                                        sizeof(float) * 2, 0);
@@ -151,14 +145,17 @@ void Renderer::init_puck(std::vector<float> &coords) {
     vbos.push_back(std::vector<GLuint>{buffer});
   }
   }
-  glFunctions->glUseProgram(programs.at(PUCK_IDX));
-  GLint color_location =
-      glFunctions->glGetUniformLocation(programs.at(PUCK_IDX), "color");
-  if (color_location == -1) {
-    std::cerr << "color location -1" << std::endl;
-    throw;
-  }
-  glFunctions->glUniform4f(color_location, 0.0f, 0.0f, 0.0f, 1.0f);
+  GLuint texture;
+  glFunctions->glGenTextures(1, &texture);
+  glFunctions->glBindTexture(GL_TEXTURE_2D, texture);
+  //glFunctions->glUseProgram(programs.at(PUCK_IDX));
+  //GLint color_location =
+  //    glFunctions->glGetUniformLocation(programs.at(PUCK_IDX), "color");
+  //if (color_location == -1) {
+  //  std::cerr << "color location -1" << std::endl;
+  //  throw;
+  //}
+  //glFunctions->glUniform4f(color_location, 0.0f, 0.0f, 0.0f, 1.0f);
 
   GLuint ebo;
   glFunctions->glGenBuffers(1, &ebo);
@@ -190,7 +187,7 @@ void Renderer::init_paddle(std::vector<float> &coords) {
     throw;
   } break;
   default: {
-    glFunctions->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * coords.size(),
+    glFunctions->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * CONSTANTS::NUM_VERTICES,
                               coords.data(), GL_DYNAMIC_DRAW);
     glFunctions->glVertexAttribPointer(location, 2, GL_FLOAT, false,
                                        sizeof(float) * 2, 0);
@@ -199,14 +196,14 @@ void Renderer::init_paddle(std::vector<float> &coords) {
     vbos.push_back(std::vector<GLuint>{buffer});
   }
   }
-  glFunctions->glUseProgram(programs.at(PADDLE_IDX));
-  GLint color_location =
-      glFunctions->glGetUniformLocation(programs.at(PADDLE_IDX), "color");
-  if (color_location == -1) {
-    std::cerr << "color location -1" << std::endl;
-    throw;
-  }
-  glFunctions->glUniform4f(color_location, 0, 0, 0, 1);
+  //glFunctions->glUseProgram(programs.at(PADDLE_IDX));
+  //GLint color_location =
+  //    glFunctions->glGetUniformLocation(programs.at(PADDLE_IDX), "color");
+  //if (color_location == -1) {
+  //  std::cerr << "color location -1" << std::endl;
+  //  throw;
+  //}
+  //glFunctions->glUniform4f(color_location, 0, 0, 0, 1);
 
   GLuint ebo;
   glFunctions->glGenBuffers(1, &ebo);
@@ -236,7 +233,11 @@ void Renderer::update_paddle_coords(std::vector<float> &coords) {
                                sizeof(float) * coords.size(), coords.data());
 }
 void Renderer::load_assets() {
-  rgba_pixels = (uint8_t*)qoi_read("assets/puck.qoi", &desc, 4);
+  rgba_pixels = (uint8_t *)qoi_read("assets/texture_atlas.qoi", &desc, 4);
+  if (rgba_pixels == NULL) {
+    std::cerr << "cannot read assets\n";
+    throw;
+  }
 }
 Renderer::~Renderer() {
   SDL_DestroyWindow(window);
