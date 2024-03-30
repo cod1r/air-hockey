@@ -26,39 +26,30 @@ Renderer::Renderer() {
     throw;
   }
   glFunctions = new OpenGLFunctions();
+  glFunctions->glEnable(GL_TEXTURE_2D);
   read_shaders();
-  GLuint puck_program = glFunctions->glCreateProgram();
-  glFunctions->glAttachShader(puck_program, vshdr);
-  glFunctions->glAttachShader(puck_program, fshdr);
-  glFunctions->glLinkProgram(puck_program);
-  programs.push_back(puck_program);
-  GLuint paddle_program = glFunctions->glCreateProgram();
-  glFunctions->glAttachShader(paddle_program, vshdr);
-  glFunctions->glAttachShader(paddle_program, fshdr);
-  glFunctions->glLinkProgram(paddle_program);
-  programs.push_back(paddle_program);
+  {
+    GLuint puck_program = glFunctions->glCreateProgram();
+    glFunctions->glAttachShader(puck_program, vshdr);
+    glFunctions->glAttachShader(puck_program, fshdr);
+    glFunctions->glLinkProgram(puck_program);
+    programs.push_back(puck_program);
+  }
+  {
+    GLuint paddle_program = glFunctions->glCreateProgram();
+    glFunctions->glAttachShader(paddle_program, vshdr);
+    glFunctions->glAttachShader(paddle_program, fshdr);
+    glFunctions->glLinkProgram(paddle_program);
+    programs.push_back(paddle_program);
+  }
+  {
+    GLuint texture_program = glFunctions->glCreateProgram();
+    glFunctions->glAttachShader(texture_program, vshdr);
+    glFunctions->glAttachShader(texture_program, fshdr);
+    glFunctions->glLinkProgram(texture_program);
+    programs.push_back(texture_program);
+  }
   load_assets();
-}
-void Renderer::render() {
-  glFunctions->glClear(GL_COLOR_BUFFER_BIT);
-  glFunctions->glClearColor(1, 1, 1, 1);
-
-  glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(PUCK_IDX).at(0));
-  glFunctions->glVertexAttribPointer(buffer_info.at(PUCK_IDX).attrib_location,
-                                     2, GL_FLOAT, GL_FALSE, sizeof(float) * 2,
-                                     0);
-  glFunctions->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebos.at(PUCK_IDX).at(0));
-  glFunctions->glDrawElements(GL_TRIANGLES, CONSTANTS::NUM_SIDES * 3,
-                              GL_UNSIGNED_INT, 0);
-
-  glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(PADDLE_IDX).at(0));
-  glFunctions->glVertexAttribPointer(buffer_info.at(PADDLE_IDX).attrib_location,
-                                     2, GL_FLOAT, GL_FALSE, sizeof(float) * 2,
-                                     0);
-  glFunctions->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebos.at(PADDLE_IDX).at(0));
-  glFunctions->glDrawElements(GL_TRIANGLES, CONSTANTS::NUM_SIDES * 3,
-                              GL_UNSIGNED_INT, 0);
-  SDL_GL_SwapWindow(window);
 }
 void Renderer::read_shaders() {
   std::cerr << "OPENGL VERSION: " << glFunctions->glGetString(GL_VERSION)
@@ -123,12 +114,61 @@ void Renderer::read_shaders() {
   fsh.close();
   std::cerr << "DONE READING FRAGMENT SHADER\n";
 }
-void Renderer::init_puck(std::vector<float> &coords) {
-  GLuint buffer;
-  glFunctions->glGenBuffers(1, &buffer);
-  glFunctions->glBindBuffer(GL_ARRAY_BUFFER, buffer);
-  GLint location =
-      glFunctions->glGetAttribLocation(programs.at(PUCK_IDX), "pos");
+void Renderer::render() {
+  glFunctions->glClear(GL_COLOR_BUFFER_BIT);
+  glFunctions->glClearColor(1, 1, 1, 1);
+
+  // glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(PUCK_IDX));
+  // glFunctions->glVertexAttribPointer(buffer_info.at(PUCK_IDX).attrib_location,
+  //                                    2, GL_FLOAT, GL_FALSE, sizeof(float) *
+  //                                    2, 0);
+  // glFunctions->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebos.at(PUCK_IDX));
+  // glFunctions->glDrawElements(GL_TRIANGLES, CONSTANTS::NUM_SIDES * 3,
+  //                             GL_UNSIGNED_INT, 0);
+
+  // glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(PADDLE_IDX));
+  // glFunctions->glVertexAttribPointer(buffer_info.at(PADDLE_IDX).attrib_location,
+  //                                    2, GL_FLOAT, GL_FALSE, sizeof(float) *
+  //                                    2, 0);
+  // glFunctions->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebos.at(PADDLE_IDX));
+  // glFunctions->glDrawElements(GL_TRIANGLES, CONSTANTS::NUM_SIDES * 3,
+  //                             GL_UNSIGNED_INT, 0);
+  glFunctions->glActiveTexture(GL_TEXTURE0);
+  glFunctions->glBindTexture(GL_TEXTURE_2D, textures.at(0));
+
+  glFunctions->glUseProgram(programs.at(2));
+  glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(0));
+  glFunctions->glVertexAttribPointer(buffer_info.at(0).attrib_location, 2,
+                                     GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
+  glFunctions->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebos.at(0));
+  glFunctions->glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+  SDL_GL_SwapWindow(window);
+}
+void Renderer::init_test_texture() {
+  GLuint texture_buffer;
+  glFunctions->glGenBuffers(1, &texture_buffer);
+  glFunctions->glBindBuffer(GL_ARRAY_BUFFER, texture_buffer);
+  vbos.push_back(texture_buffer);
+
+
+  float vertices[] = {
+      0.5f, 0.5f, 0.5f, -0.5f, -0.5f, -0.5f, -0.5f, 0.5f,
+
+      1.0f, 1.0f, 1.0f, 0.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+  };
+  glFunctions->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 8, vertices,
+                            GL_STATIC_DRAW);
+  GLuint ebo;
+  glFunctions->glGenBuffers(1, &ebo);
+  glFunctions->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+
+  int indices[] = {0, 1, 3, 1, 2, 3};
+
+  glFunctions->glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * 6, indices,
+                            GL_STATIC_DRAW);
+  ebos.push_back(ebo);
+
+  GLint location = glFunctions->glGetAttribLocation(programs.at(2), "pos");
   switch (location) {
   case -1: {
     std::cerr << "glGetAttribLocation could not get 'pos' location"
@@ -136,105 +176,203 @@ void Renderer::init_puck(std::vector<float> &coords) {
     throw;
   } break;
   default: {
-    glFunctions->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * CONSTANTS::NUM_VERTICES,
-                              coords.data(), GL_DYNAMIC_DRAW);
     glFunctions->glVertexAttribPointer(location, 2, GL_FLOAT, GL_FALSE,
                                        sizeof(float) * 2, 0);
     glFunctions->glEnableVertexAttribArray(location);
     buffer_info.push_back({location});
-    vbos.push_back(std::vector<GLuint>{buffer});
+  }
+  }
+  GLint location_texture =
+      glFunctions->glGetAttribLocation(programs.at(2), "in_tex_coord");
+  switch (location_texture) {
+  case -1: {
+    std::cerr << "glGetAttribLocation could not get 'in_tex_coord' location"
+              << std::endl;
+    throw;
+  } break;
+  default: {
+    glFunctions->glVertexAttribPointer(location_texture, 2, GL_FLOAT, GL_FALSE,
+                                       sizeof(float) * 2,
+                                       (void *)(sizeof(float) * 8));
+    glFunctions->glEnableVertexAttribArray(location_texture);
+    buffer_info.push_back({location_texture});
   }
   }
   GLuint texture;
   glFunctions->glGenTextures(1, &texture);
   glFunctions->glBindTexture(GL_TEXTURE_2D, texture);
-  //glFunctions->glUseProgram(programs.at(PUCK_IDX));
-  //GLint color_location =
-  //    glFunctions->glGetUniformLocation(programs.at(PUCK_IDX), "color");
-  //if (color_location == -1) {
-  //  std::cerr << "color location -1" << std::endl;
-  //  throw;
-  //}
-  //glFunctions->glUniform4f(color_location, 0.0f, 0.0f, 0.0f, 1.0f);
-
-  GLuint ebo;
-  glFunctions->glGenBuffers(1, &ebo);
-  glFunctions->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-  ebos.push_back(std::vector<GLuint>{ebo});
-
-  std::array<int, CONSTANTS::NUM_SIDES * 3> vertices{{}};
-  int counter = 0;
-  for (int i = 0; i < (int)vertices.size(); i += 3) {
-    vertices[i] = counter;
-    vertices[i + 1] = counter + 1;
-    vertices[i + 2] = CONSTANTS::NUM_VERTICES / 2 - 1;
-    counter += 1;
+  //glFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  //glFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  //glFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  //glFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glFunctions->glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+  textures.push_back(texture);
+  glFunctions->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, desc.width, desc.height,
+                            0, GL_RGB, GL_UNSIGNED_BYTE, rgb_pixels);
+  GLint sampler_location = glFunctions->glGetUniformLocation(programs.at(2), "sampler");
+  if (sampler_location == -1) {
+    throw std::runtime_error("sampler location is -1");
   }
-  glFunctions->glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                            sizeof(int) * vertices.size(), vertices.data(),
-                            GL_STATIC_DRAW);
+  glFunctions->glUseProgram(programs.at(2));
+  glFunctions->glUniform1i(sampler_location, 0);
+}
+void Renderer::init_puck(std::vector<float> &coords) {
+  {
+    GLuint buffer;
+    glFunctions->glGenBuffers(1, &buffer);
+    glFunctions->glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    GLint location =
+        glFunctions->glGetAttribLocation(programs.at(PUCK_IDX), "pos");
+    switch (location) {
+    case -1: {
+      std::cerr << "glGetAttribLocation could not get 'pos' location"
+                << std::endl;
+      throw;
+    } break;
+    default: {
+      glFunctions->glBufferData(GL_ARRAY_BUFFER,
+                                sizeof(float) * CONSTANTS::NUM_VERTICES,
+                                coords.data(), GL_DYNAMIC_DRAW);
+      glFunctions->glVertexAttribPointer(location, 2, GL_FLOAT, GL_FALSE,
+                                         sizeof(float) * 2, 0);
+      glFunctions->glEnableVertexAttribArray(location);
+      buffer_info.push_back({location});
+      vbos.push_back(buffer);
+    }
+    }
+  }
+  {
+    // GLuint texture;
+    // glFunctions->glGenTextures(1, &texture);
+    // glFunctions->glBindTexture(GL_TEXTURE_2D, texture);
+    // glFunctions->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, desc.width,
+    //                           desc.height, 0, GL_RGB, GL_UNSIGNED_BYTE,
+    //                           rgba_pixels);
+    // free(rgba_pixels);
+    // GLint location_for_tex_coord =
+    //     glFunctions->glGetAttribLocation(programs.at(PUCK_IDX),
+    //     "in_tex_coord");
+    // switch (location_for_tex_coord) {
+    // case -1: {
+    //   std::cerr << "glGetAttribLocation could not get 'pos' location"
+    //             << std::endl;
+    //   throw;
+    // } break;
+    // default: {
+    //   glFunctions->glVertexAttribPointer(
+    //       location_for_tex_coord, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2,
+    //       (void *)(CONSTANTS::NUM_VERTICES * sizeof(float)));
+    //   glFunctions->glEnableVertexAttribArray(location_for_tex_coord);
+    //   buffer_info.push_back({location_for_tex_coord});
+    //   textures.push_back(texture);
+    // }
+    // }
+    //  glFunctions->glUseProgram(programs.at(PUCK_IDX));
+    //  GLint color_location =
+    //      glFunctions->glGetUniformLocation(programs.at(PUCK_IDX), "color");
+    //  if (color_location == -1) {
+    //    std::cerr << "color location -1" << std::endl;
+    //    throw;
+    //  }
+    //  glFunctions->glUniform4f(color_location, 0.0f, 0.0f, 0.0f, 1.0f);
+  }
+
+  {
+    GLuint ebo;
+    glFunctions->glGenBuffers(1, &ebo);
+    glFunctions->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    ebos.push_back(ebo);
+
+    std::array<int, CONSTANTS::NUM_SIDES * 3> vertices{{}};
+    int counter = 0;
+    for (int i = 0; i < (int)vertices.size(); i += 3) {
+      vertices[i] = counter;
+      vertices[i + 1] = counter + 1;
+      vertices[i + 2] = CONSTANTS::NUM_VERTICES / 2 - 1;
+      counter += 1;
+    }
+    glFunctions->glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                              sizeof(int) * vertices.size(), vertices.data(),
+                              GL_STATIC_DRAW);
+  }
 }
 void Renderer::init_paddle(std::vector<float> &coords) {
-  GLuint buffer;
-  glFunctions->glGenBuffers(1, &buffer);
-  glFunctions->glBindBuffer(GL_ARRAY_BUFFER, buffer);
-  GLint location =
-      glFunctions->glGetAttribLocation(programs.at(PADDLE_IDX), "pos");
-  switch (location) {
-  case -1: {
-    std::cerr << "glGetAttribLocation could not get 'pos' location"
-              << std::endl;
-    throw;
-  } break;
-  default: {
-    glFunctions->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * CONSTANTS::NUM_VERTICES,
-                              coords.data(), GL_DYNAMIC_DRAW);
-    glFunctions->glVertexAttribPointer(location, 2, GL_FLOAT, false,
-                                       sizeof(float) * 2, 0);
-    glFunctions->glEnableVertexAttribArray(location);
-    buffer_info.push_back({location});
-    vbos.push_back(std::vector<GLuint>{buffer});
+  {
+    GLuint buffer;
+    glFunctions->glGenBuffers(1, &buffer);
+    glFunctions->glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    GLint location =
+        glFunctions->glGetAttribLocation(programs.at(PADDLE_IDX), "pos");
+    switch (location) {
+    case -1: {
+      std::cerr << "glGetAttribLocation could not get 'pos' location"
+                << std::endl;
+      throw;
+    } break;
+    default: {
+      glFunctions->glBufferData(GL_ARRAY_BUFFER,
+                                sizeof(float) * CONSTANTS::NUM_VERTICES,
+                                coords.data(), GL_DYNAMIC_DRAW);
+      glFunctions->glVertexAttribPointer(location, 2, GL_FLOAT, false,
+                                         sizeof(float) * 2, 0);
+      glFunctions->glEnableVertexAttribArray(location);
+      buffer_info.push_back({location});
+      vbos.push_back(buffer);
+    }
+    }
+    // glFunctions->glUseProgram(programs.at(PADDLE_IDX));
+    // GLint color_location =
+    //     glFunctions->glGetUniformLocation(programs.at(PADDLE_IDX), "color");
+    // if (color_location == -1) {
+    //   std::cerr << "color location -1" << std::endl;
+    //   throw;
+    // }
+    // glFunctions->glUniform4f(color_location, 0, 0, 0, 1);
   }
+  {
+    GLuint texture;
+    glFunctions->glGenTextures(1, &texture);
   }
-  //glFunctions->glUseProgram(programs.at(PADDLE_IDX));
-  //GLint color_location =
-  //    glFunctions->glGetUniformLocation(programs.at(PADDLE_IDX), "color");
-  //if (color_location == -1) {
-  //  std::cerr << "color location -1" << std::endl;
-  //  throw;
-  //}
-  //glFunctions->glUniform4f(color_location, 0, 0, 0, 1);
 
-  GLuint ebo;
-  glFunctions->glGenBuffers(1, &ebo);
-  glFunctions->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-  ebos.push_back(std::vector<GLuint>{ebo});
+  {
+    GLuint ebo;
+    glFunctions->glGenBuffers(1, &ebo);
+    glFunctions->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    ebos.push_back(ebo);
 
-  std::array<int, CONSTANTS::NUM_SIDES * 3> vertices{{}};
-  int counter = 0;
-  for (int i = 0; i < (int)vertices.size(); i += 3) {
-    vertices[i] = counter;
-    vertices[i + 1] = counter + 1;
-    vertices[i + 2] = CONSTANTS::NUM_VERTICES / 2 - 1;
-    counter += 1;
+    std::array<int, CONSTANTS::NUM_SIDES * 3> vertices{{}};
+    int counter = 0;
+    for (int i = 0; i < (int)vertices.size(); i += 3) {
+      vertices[i] = counter;
+      vertices[i + 1] = counter + 1;
+      vertices[i + 2] = CONSTANTS::NUM_VERTICES / 2 - 1;
+      counter += 1;
+    }
+    glFunctions->glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                              sizeof(int) * vertices.size(), vertices.data(),
+                              GL_STATIC_DRAW);
   }
-  glFunctions->glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                            sizeof(int) * vertices.size(), vertices.data(),
-                            GL_STATIC_DRAW);
 }
 void Renderer::update_puck_coords(std::vector<float> &coords) {
-  glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(PUCK_IDX).at(0));
+  glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(PUCK_IDX));
   glFunctions->glBufferSubData(GL_ARRAY_BUFFER, 0,
                                sizeof(float) * coords.size(), coords.data());
 }
 void Renderer::update_paddle_coords(std::vector<float> &coords) {
-  glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(PADDLE_IDX).at(0));
+  glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(PADDLE_IDX));
   glFunctions->glBufferSubData(GL_ARRAY_BUFFER, 0,
                                sizeof(float) * coords.size(), coords.data());
 }
 void Renderer::load_assets() {
-  rgba_pixels = (uint8_t *)qoi_read("assets/texture_atlas.qoi", &desc, 4);
-  if (rgba_pixels == NULL) {
+  rgb_pixels = (uint8_t *)qoi_read("assets/texture_atlas.qoi", &desc, 3);
+  std::ofstream of("output.txt");
+  if (of.is_open()) {
+    for (int i = 0; i < 256 * 256 * 3; i += 3) {
+      of << (int)rgb_pixels[i] << " " << (int)rgb_pixels[i + 1] << " " << (int)rgb_pixels[i + 2] << std::endl;
+    }
+    of.close();
+  }
+  if (rgb_pixels == NULL) {
     std::cerr << "cannot read assets\n";
     throw;
   }

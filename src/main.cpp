@@ -4,4 +4,5 @@
 int main() {
   AirHockey ah = AirHockey();
   ah.loop();
+  return 0;
 }

@@ -1,5 +1,10 @@
 #include "OpenGLFunctions.h"
 OpenGLFunctions::OpenGLFunctions() {
+  glUniform1i = (void(*)(GLint, GLint))SDL_GL_GetProcAddress("glUniform1i");
+  glActiveTexture = (void (*)(GLenum))SDL_GL_GetProcAddress("glActiveTexture");
+  glEnable = (void (*)(GLenum))SDL_GL_GetProcAddress("glEnable");
+  glIsEnabled = (GLboolean(*)(GLenum))SDL_GL_GetProcAddress("glIsEnabled");
+  glIsTexture = (GLboolean(*)(GLuint))SDL_GL_GetProcAddress("glIsTexture");
   glTexParameterf = (void (*)(GLenum, GLenum, GLfloat))SDL_GL_GetProcAddress(
       "glTexParameterf");
   glTexParameteri =

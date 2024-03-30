@@ -12,6 +12,11 @@
 #define _OPENGL_FUNCTIONS_H
 class OpenGLFunctions {
 public:
+  void (*glUniform1i)(GLint,GLint);
+  void (*glActiveTexture)(GLenum);
+  void (*glEnable)(GLenum);
+  GLboolean (*glIsEnabled)(GLenum);
+  GLboolean (*glIsTexture)(GLuint);
   void (*glTexParameterf)(GLenum, GLenum, GLfloat);
   void (*glTexParameteri)(GLenum, GLenum, GLint);
   void (*glGetUniformfv)(GLuint, GLint, GLfloat *);

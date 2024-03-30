@@ -50,8 +50,8 @@ struct BufferObjectMetaData {
 };
 class Renderer {
   std::vector<BufferObjectMetaData> buffer_info;
-  std::vector<std::vector<GLuint>> vbos;
-  std::vector<std::vector<GLuint>> ebos;
+  std::vector<GLuint> vbos;
+  std::vector<GLuint> ebos;
   std::vector<GLuint> textures;
   std::vector<GLuint> programs;
   GLuint vshdr;
@@ -61,13 +61,14 @@ public:
   OpenGLFunctions *glFunctions = nullptr;
   SDL_Window *window = nullptr;
   qoi_desc desc;
-  uint8_t *rgba_pixels = nullptr;
+  uint8_t *rgb_pixels = nullptr;
   Renderer();
   ~Renderer();
   void render();
   void read_shaders();
   void init_puck(std::vector<float> &);
   void init_paddle(std::vector<float> &);
+  void init_test_texture();
   void update_puck_coords(std::vector<float> &);
   void update_paddle_coords(std::vector<float> &);
   void update_puck_inter_coords(std::vector<float> &);
