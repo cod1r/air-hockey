@@ -136,7 +136,6 @@ void Renderer::render() {
   glFunctions->glActiveTexture(GL_TEXTURE0);
   glFunctions->glBindTexture(GL_TEXTURE_2D, textures.at(0));
 
-  glFunctions->glUseProgram(programs.at(2));
   glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(0));
   glFunctions->glVertexAttribPointer(buffer_info.at(0).attrib_location, 2,
                                      GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
@@ -150,11 +149,9 @@ void Renderer::init_test_texture() {
   glFunctions->glBindBuffer(GL_ARRAY_BUFFER, texture_buffer);
   vbos.push_back(texture_buffer);
 
-
   float vertices[] = {
       0.5f, 0.5f, 0.5f, -0.5f, -0.5f, -0.5f, -0.5f, 0.5f,
 
-      1.0f, 1.0f, 1.0f, 0.0f,  0.0f,  0.0f,  0.0f,  1.0f,
   };
   glFunctions->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 8, vertices,
                             GL_STATIC_DRAW);
@@ -171,9 +168,7 @@ void Renderer::init_test_texture() {
   GLint location = glFunctions->glGetAttribLocation(programs.at(2), "pos");
   switch (location) {
   case -1: {
-    std::cerr << "glGetAttribLocation could not get 'pos' location"
-              << std::endl;
-    throw;
+    throw std::runtime_error("glGetAttribLocation could not get 'pos' location");
   } break;
   default: {
     glFunctions->glVertexAttribPointer(location, 2, GL_FLOAT, GL_FALSE,
@@ -182,18 +177,25 @@ void Renderer::init_test_texture() {
     buffer_info.push_back({location});
   }
   }
+  GLuint texture_verts_buffer;
+  glFunctions->glGenBuffers(1, &texture_verts_buffer);
+  glFunctions->glBindBuffer(GL_ARRAY_BUFFER, texture_verts_buffer);
+  vbos.push_back(texture_verts_buffer);
+  float texture_vertices[] = {
+      1.0f, 1.0f, 1.0f, 0.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+  };
+  glFunctions->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 8, texture_vertices,
+                            GL_STATIC_DRAW);
   GLint location_texture =
-      glFunctions->glGetAttribLocation(programs.at(2), "in_tex_coord");
+      glFunctions->glGetAttribLocation(programs.at(2), "in_tex_coord_t");
   switch (location_texture) {
   case -1: {
-    std::cerr << "glGetAttribLocation could not get 'in_tex_coord' location"
-              << std::endl;
-    throw;
+    throw std::runtime_error("glGetAttribLocation could not get 'in_tex_coord' location");
   } break;
   default: {
     glFunctions->glVertexAttribPointer(location_texture, 2, GL_FLOAT, GL_FALSE,
                                        sizeof(float) * 2,
-                                       (void *)(sizeof(float) * 8));
+                                       0);
     glFunctions->glEnableVertexAttribArray(location_texture);
     buffer_info.push_back({location_texture});
   }
@@ -201,10 +203,10 @@ void Renderer::init_test_texture() {
   GLuint texture;
   glFunctions->glGenTextures(1, &texture);
   glFunctions->glBindTexture(GL_TEXTURE_2D, texture);
-  //glFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  //glFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  //glFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  //glFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   glFunctions->glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
   textures.push_back(texture);
   glFunctions->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, desc.width, desc.height,

@@ -1,5 +1,9 @@
 #include "OpenGLFunctions.h"
 OpenGLFunctions::OpenGLFunctions() {
+  glGetVertexAttribiv = (void(*)(GLuint, GLenum, GLint*))SDL_GL_GetProcAddress("glGetVertexAttribiv");
+  glGetVertexAttribfv = (void(*)(GLuint, GLenum, GLfloat*))SDL_GL_GetProcAddress("glGetVertexAttribfv");
+  glGetTexParameteriv = (void(*)(GLenum, GLenum, GLint *))SDL_GL_GetProcAddress("glGetTexParameteriv");
+  glGetTexImage = (void(*)(GLenum, GLint, GLenum, GLenum, void*))SDL_GL_GetProcAddress("glGetTexImage");
   glUniform1i = (void(*)(GLint, GLint))SDL_GL_GetProcAddress("glUniform1i");
   glActiveTexture = (void (*)(GLenum))SDL_GL_GetProcAddress("glActiveTexture");
   glEnable = (void (*)(GLenum))SDL_GL_GetProcAddress("glEnable");

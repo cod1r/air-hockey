@@ -12,6 +12,10 @@
 #define _OPENGL_FUNCTIONS_H
 class OpenGLFunctions {
 public:
+  void (*glGetVertexAttribiv)(GLuint, GLenum , GLint *);
+  void (*glGetVertexAttribfv)(GLuint, GLenum, GLfloat *);
+  void (*glGetTexParameteriv)(GLenum, GLenum, GLint *);
+  void (*glGetTexImage)(GLenum, GLint, GLenum, GLenum, void *);
   void (*glUniform1i)(GLint,GLint);
   void (*glActiveTexture)(GLenum);
   void (*glEnable)(GLenum);
