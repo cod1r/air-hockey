@@ -10,9 +10,9 @@
 #include <format>
 #include <iostream>
 #include <numbers>
-std::array<float, CONSTANTS::NUM_VERTICES * 2>
+std::array<float, CONSTANTS::NUM_VERTICES>
 generate_circle_verts(float radius, float offsetx, float offsety) {
-  std::array<float, CONSTANTS::NUM_VERTICES * 2> vertices{{}};
+  std::array<float, CONSTANTS::NUM_VERTICES> vertices{{}};
   for (size_t idx = 0; idx < CONSTANTS::NUM_VERTICES - 2; idx += 2) {
     float angle =
         (360.0f / CONSTANTS::NUM_SIDES) * (idx / 2) * std::numbers::pi / 180.0f;

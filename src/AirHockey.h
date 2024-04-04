@@ -18,8 +18,6 @@ public:
   ~AirHockey();
   void loop();
 };
-// CONSTANTS::NUM_VERTICES * 2 because we store position coords as well as
-// texture coords
-std::array<float, CONSTANTS::NUM_VERTICES * 2>
+std::array<float, CONSTANTS::NUM_VERTICES>
 generate_circle_verts(float radius, float offsetx, float offsety);
 #endif

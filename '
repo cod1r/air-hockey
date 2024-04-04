@@ -204,14 +204,12 @@ void Renderer::init_test_texture() {
   GLuint texture;
   glFunctions->glGenTextures(1, &texture);
   glFunctions->glBindTexture(GL_TEXTURE_2D, texture);
-  glFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
-  glFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-  glFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glFunctions->glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
   textures.push_back(texture);
   glFunctions->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, desc.width, desc.height,
                             0, GL_RGB, GL_UNSIGNED_BYTE, rgb_pixels);
+  glFunctions->glTexSubImage2D(GL_TEXTURE_2D, 1, 0, 0, 256, 256, GL_RGB, GL_UNSIGNED_BYTE, rgb_pixels);
+  GET_GL_ERROR();
   GLint sampler_location = glFunctions->glGetUniformLocation(programs.at(2), "sampler");
   if (sampler_location == -1) {
     throw std::runtime_error("sampler location is -1");
@@ -337,7 +335,6 @@ void Renderer::update_paddle_coords(std::vector<float> &coords) {
 }
 void Renderer::load_assets() {
   rgb_pixels = (uint8_t *)qoi_read("assets/texture_atlas.qoi", &desc, 3);
-  std::cerr << desc.width << " " << desc.height << std::endl;
   if (rgb_pixels == NULL) {
     std::cerr << "cannot read assets\n";
     throw;

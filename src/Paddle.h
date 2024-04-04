@@ -8,7 +8,7 @@ class Paddle {
 public:
   Paddle();
   ~Paddle();
-  std::array<float, CONSTANTS::NUM_VERTICES * 2> vertices;
+  std::array<float, CONSTANTS::NUM_VERTICES> vertices;
   std::vector<float> vec;
   void update(float, float);
 };
