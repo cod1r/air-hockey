@@ -4,11 +4,7 @@
 #include "Renderer.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <cassert>
 #include <cmath>
-#include <filesystem>
-#include <format>
-#include <iostream>
 #include <numbers>
 std::array<float, CONSTANTS::NUM_VERTICES>
 generate_circle_verts(float radius, float offsetx, float offsety) {

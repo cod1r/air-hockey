@@ -60,10 +60,8 @@ void Renderer::read_shaders() {
   if (vsh.is_open()) {
     std::cerr << "Reading vertex shader\n";
     std::string vshdr_contents;
-    int count = 0;
     while (!vsh.eof()) {
       vshdr_contents += vsh.get();
-      count++;
     }
     vshdr = glFunctions->glCreateShader(GL_VERTEX_SHADER);
     const GLchar *shdr_cstr = vshdr_contents.c_str();

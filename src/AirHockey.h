@@ -3,8 +3,6 @@
 #include "constants.h"
 #include <SDL2/SDL.h>
 #include <array>
-#include <cmath>
-#include <numbers>
 class Puck;
 class Paddle;
 class Renderer;
