@@ -1,3 +1,4 @@
+#include <string_view>
 #define QOI_IMPLEMENTATION
 #include "Renderer.h"
 #include "AirHockey.h"
@@ -9,6 +10,8 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <fmt/format.h>
+
 Renderer::Renderer() {
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
     std::cout << SDL_GetError() << std::endl;
@@ -52,8 +55,9 @@ Renderer::Renderer() {
   load_assets();
 }
 void Renderer::read_shaders() {
-  std::cerr << "OPENGL VERSION: " << glFunctions->glGetString(GL_VERSION)
-            << std::endl;
+  fmt::println("OPENGL VERSION: {}",
+    std::string_view(reinterpret_cast<char*>(glFunctions->glGetString(GL_VERSION))));
+  fmt::println("SUPPORTS GL_TEXTURE_2D: {}", glFunctions->glIsEnabled(GL_TEXTURE_2D));
   std::filesystem::path vsh_path(std::string("shaders/vtx.glsl"));
   std::ifstream vsh;
   vsh.open(vsh_path.c_str());
@@ -149,7 +153,10 @@ void Renderer::init_test_texture() {
   vbos.push_back(texture_buffer);
 
   float vertices[] = {
-      0.5f, 0.5f, 0.5f, -0.5f, -0.5f, -0.5f, -0.5f, 0.5f,
+      0.5f, 0.5f,
+      0.5f, -0.5f,
+      -0.5f, -0.5f,
+      -0.5f, 0.5f,
   };
   glFunctions->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 8, vertices,
                             GL_STATIC_DRAW);
@@ -180,9 +187,12 @@ void Renderer::init_test_texture() {
   glFunctions->glGenBuffers(1, &texture_buffer_coords);
   glFunctions->glBindBuffer(GL_ARRAY_BUFFER, texture_buffer_coords);
 
-      float tex_coords[] = {
-        1.0f, 1.0f, 1.0f, 0.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-      };
+  float tex_coords[] = {
+    1.f, 1.f,
+    1.f, 0.f,
+    0.f, 0.f,
+    0.f, 1.f,
+  };
   glFunctions->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 8, tex_coords,
                             GL_STATIC_DRAW);
   GLint location_texture =
@@ -193,8 +203,7 @@ void Renderer::init_test_texture() {
   } break;
   default: {
     glFunctions->glVertexAttribPointer(location_texture, 2, GL_FLOAT, GL_FALSE,
-                                       sizeof(float) * 2,
-                                       0);
+                                       sizeof(float) * 2, 0);
     glFunctions->glEnableVertexAttribArray(location_texture);
     buffer_info.push_back({location_texture});
   }
@@ -208,8 +217,8 @@ void Renderer::init_test_texture() {
   glFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glFunctions->glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
   textures.push_back(texture);
-  glFunctions->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, desc.width, desc.height,
-                            0, GL_RGB, GL_UNSIGNED_BYTE, rgb_pixels);
+  glFunctions->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, desc.width, desc.height,
+                            0, GL_RGBA, GL_UNSIGNED_BYTE, rgb_pixels);
   GLint sampler_location = glFunctions->glGetUniformLocation(programs.at(2), "sampler");
   if (sampler_location == -1) {
     throw std::runtime_error("sampler location is -1");
@@ -334,11 +343,10 @@ void Renderer::update_paddle_coords(std::vector<float> &coords) {
                                sizeof(float) * coords.size(), coords.data());
 }
 void Renderer::load_assets() {
-  rgb_pixels = (uint8_t *)qoi_read("assets/texture_atlas.qoi", &desc, 3);
-  std::cerr << desc.width << " " << desc.height << std::endl;
+  rgb_pixels = (uint8_t *)qoi_read("assets/texture_atlas.qoi", &desc, 4);
+  fmt::println("width: {}, height: {}", desc.width, desc.height);
   if (rgb_pixels == NULL) {
-    std::cerr << "cannot read assets\n";
-    throw;
+    throw std::runtime_error("cannot read assets");
   }
 }
 Renderer::~Renderer() {
