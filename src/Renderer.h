@@ -41,6 +41,7 @@
 class OpenGLFunctions;
 static const int PUCK_IDX = 0;
 static const int PADDLE_IDX = 1;
+static const int TEXTURE_IDX = 2;
 struct BufferObjectMetaData {
   GLint attrib_location;
   GLint size;
@@ -68,7 +69,7 @@ public:
   void read_shaders();
   void init_puck(std::vector<float> &);
   void init_paddle(std::vector<float> &);
-  void init_test_texture();
+  void init_table_texture();
   void update_puck_coords(std::vector<float> &);
   void update_paddle_coords(std::vector<float> &);
   void update_puck_inter_coords(std::vector<float> &);

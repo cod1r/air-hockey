@@ -28,9 +28,9 @@ AirHockey::AirHockey() {
   std::vector<float> puck_coords(puck->vertices.begin(), puck->vertices.end());
   std::vector<float> paddle_coords(paddle->vertices.begin(),
                                    paddle->vertices.end());
-  // renderer->init_puck(puck_coords);
-  // renderer->init_paddle(paddle_coords);
-  renderer->init_test_texture();
+  renderer->init_puck(puck_coords);
+  renderer->init_paddle(paddle_coords);
+  renderer->init_table_texture();
 }
 AirHockey::~AirHockey() {}
 

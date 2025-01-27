@@ -62,7 +62,7 @@ void Renderer::read_shaders() {
   std::ifstream vsh;
   vsh.open(vsh_path.c_str());
   if (vsh.is_open()) {
-    std::cerr << "Reading vertex shader\n";
+    fmt::println(stderr, "Reading vertex shader");
     std::string vshdr_contents;
     while (!vsh.eof()) {
       vshdr_contents += vsh.get();
@@ -78,20 +78,18 @@ void Renderer::read_shaders() {
       GLsizei length;
       GLchar buffer[1024];
       glFunctions->glGetShaderInfoLog(vshdr, 1024, &length, buffer);
-      std::cerr << buffer << std::endl;
+      fmt::println(stderr, "{}", buffer);
       throw;
     }
   } else {
-    std::cerr << "vertex shader could not be opened" << std::endl;
-    throw;
+    throw std::runtime_error("vertex shader could not be opened");
   }
   vsh.close();
-  std::cerr << "DONE READING VERTEX SHADER\n";
   std::filesystem::path fsh_path(std::string("shaders/frag.glsl"));
   std::ifstream fsh;
   fsh.open(fsh_path.c_str());
   if (fsh.is_open()) {
-    std::cerr << "Reading fragment shader\n";
+    fmt::println(stderr, "Reading fragment shader");
     std::string fshdr_contents;
     while (!fsh.eof()) {
       fshdr_contents += fsh.get();
@@ -107,56 +105,60 @@ void Renderer::read_shaders() {
       GLsizei length;
       GLchar buffer[1024];
       glFunctions->glGetShaderInfoLog(fshdr, 1024, &length, buffer);
-      std::cerr << buffer << std::endl;
+      fmt::println(stderr, "{}", buffer);
     }
   } else {
-    std::cerr << "fragment shader could not be opened" << std::endl;
-    throw;
+    throw std::runtime_error("fragment shader could not be opened");
   }
   fsh.close();
-  std::cerr << "DONE READING FRAGMENT SHADER\n";
 }
 void Renderer::render() {
   glFunctions->glClear(GL_COLOR_BUFFER_BIT);
   glFunctions->glClearColor(1, 1, 1, 1);
+  {
+    glFunctions->glActiveTexture(GL_TEXTURE0);
+    glFunctions->glBindTexture(GL_TEXTURE_2D, textures.at(0));
 
-  // glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(PUCK_IDX));
-  // glFunctions->glVertexAttribPointer(buffer_info.at(PUCK_IDX).attrib_location,
-  //                                    2, GL_FLOAT, GL_FALSE, sizeof(float) *
-  //                                    2, 0);
-  // glFunctions->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebos.at(PUCK_IDX));
-  // glFunctions->glDrawElements(GL_TRIANGLES, CONSTANTS::NUM_SIDES * 3,
-  //                             GL_UNSIGNED_INT, 0);
-
-  // glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(PADDLE_IDX));
-  // glFunctions->glVertexAttribPointer(buffer_info.at(PADDLE_IDX).attrib_location,
-  //                                    2, GL_FLOAT, GL_FALSE, sizeof(float) *
-  //                                    2, 0);
-  // glFunctions->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebos.at(PADDLE_IDX));
-  // glFunctions->glDrawElements(GL_TRIANGLES, CONSTANTS::NUM_SIDES * 3,
-  //                             GL_UNSIGNED_INT, 0);
-  glFunctions->glActiveTexture(GL_TEXTURE0);
-  glFunctions->glBindTexture(GL_TEXTURE_2D, textures.at(0));
-
-  glFunctions->glUseProgram(programs.at(2));
-  glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(0));
-  glFunctions->glVertexAttribPointer(buffer_info.at(0).attrib_location, 2,
-                                     GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
-  glFunctions->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebos.at(0));
-  glFunctions->glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glFunctions->glUseProgram(programs.at(TEXTURE_IDX));
+    glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(TEXTURE_IDX));
+    glFunctions->glVertexAttribPointer(buffer_info.at(TEXTURE_IDX).attrib_location, 2,
+                                       GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
+    glFunctions->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebos.at(TEXTURE_IDX));
+    glFunctions->glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+  }
+  {
+    glFunctions->glUseProgram(programs.at(PUCK_IDX));
+    glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(PUCK_IDX));
+    glFunctions->glVertexAttribPointer(buffer_info.at(PUCK_IDX).attrib_location,
+                                       2, GL_FLOAT, GL_FALSE, sizeof(float) *
+                                       2, 0);
+    glFunctions->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebos.at(PUCK_IDX));
+    glFunctions->glDrawElements(GL_TRIANGLES, CONSTANTS::NUM_SIDES * 3,
+                                GL_UNSIGNED_INT, 0);
+  }
+  {
+    glFunctions->glUseProgram(programs.at(PADDLE_IDX));
+    glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(PADDLE_IDX));
+    glFunctions->glVertexAttribPointer(buffer_info.at(PADDLE_IDX).attrib_location,
+                                       2, GL_FLOAT, GL_FALSE, sizeof(float) *
+                                       2, 0);
+    glFunctions->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebos.at(PADDLE_IDX));
+    glFunctions->glDrawElements(GL_TRIANGLES, CONSTANTS::NUM_SIDES * 3,
+                                GL_UNSIGNED_INT, 0);
+  }
   SDL_GL_SwapWindow(window);
 }
-void Renderer::init_test_texture() {
+void Renderer::init_table_texture() {
   GLuint texture_buffer;
   glFunctions->glGenBuffers(1, &texture_buffer);
   glFunctions->glBindBuffer(GL_ARRAY_BUFFER, texture_buffer);
   vbos.push_back(texture_buffer);
 
   float vertices[] = {
-      0.5f, 0.5f,
-      0.5f, -0.5f,
-      -0.5f, -0.5f,
-      -0.5f, 0.5f,
+      1.f, 1.f,
+      1.f, -1.f,
+      -1.f, -1.f,
+      -1.f, 1.f,
   };
   glFunctions->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 8, vertices,
                             GL_STATIC_DRAW);
@@ -213,8 +215,8 @@ void Renderer::init_test_texture() {
   glFunctions->glBindTexture(GL_TEXTURE_2D, texture);
   glFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
   glFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-  glFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+  glFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glFunctions->glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
   textures.push_back(texture);
   glFunctions->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, desc.width, desc.height,
@@ -223,8 +225,18 @@ void Renderer::init_test_texture() {
   if (sampler_location == -1) {
     throw std::runtime_error("sampler location is -1");
   }
-  glFunctions->glUseProgram(programs.at(2));
+  glFunctions->glUseProgram(programs.at(TEXTURE_IDX));
   glFunctions->glUniform1i(sampler_location, 0);
+
+    GLint no_texture_location =
+        glFunctions->glGetUniformLocation(programs.at(TEXTURE_IDX), "no_texture");
+
+    if (no_texture_location == -1) {
+      fmt::println(stderr, "no_texture_location -1");
+      throw;
+    }
+
+    glFunctions->glUniform1i(no_texture_location, 0);
 }
 void Renderer::init_puck(std::vector<float> &coords) {
   {
@@ -254,10 +266,20 @@ void Renderer::init_puck(std::vector<float> &coords) {
     GLint color_location =
         glFunctions->glGetUniformLocation(programs.at(PUCK_IDX), "color");
     if (color_location == -1) {
-      std::cerr << "color location -1" << std::endl;
+      fmt::println(stderr, "color location -1");
       throw;
     }
     glFunctions->glUniform4f(color_location, 0, 0, 0, 1);
+
+    GLint no_texture_location =
+        glFunctions->glGetUniformLocation(programs.at(PUCK_IDX), "no_texture");
+
+    if (no_texture_location == -1) {
+      fmt::println(stderr, "no_texture_location -1");
+      throw;
+    }
+
+    glFunctions->glUniform1i(no_texture_location, 1);
   }
 
   {
@@ -311,6 +333,16 @@ void Renderer::init_paddle(std::vector<float> &coords) {
       throw;
     }
     glFunctions->glUniform4f(color_location, 0, 0, 0, 1);
+
+    GLint no_texture_location =
+        glFunctions->glGetUniformLocation(programs.at(PADDLE_IDX), "no_texture");
+
+    if (no_texture_location == -1) {
+      fmt::println(stderr, "no_texture_location -1");
+      throw;
+    }
+
+    glFunctions->glUniform1i(no_texture_location, 1);
   }
 
   {
