@@ -12,6 +12,7 @@ public:
   Puck *puck;
   Paddle *paddle;
   Renderer *renderer = nullptr;
+  void determine_puck_velocity_when_collided(Puck* puck, const Paddle* paddle);
   AirHockey();
   ~AirHockey();
   void loop();

@@ -1,10 +1,9 @@
 #include "Puck.h"
 #include "AirHockey.h"
+#include "constants.h"
 
 Puck::Puck() {
   vertices = generate_circle_verts(PUCK_RADIUS, 0.0f, 0.0f);
-  velocity_x = 0.0f;
-  velocity_y = 0.0f;
 }
 
 void Puck::update() {
@@ -23,6 +22,6 @@ void Puck::update() {
     vertices[i] += add_amt_x;
     vertices[i + 1] += add_amt_y;
   }
-  velocity_x = add_amt_x;
-  velocity_y = add_amt_y;
+  velocity_x = add_amt_x * CONSTANTS::DECELERATION;
+  velocity_y = add_amt_y * CONSTANTS::DECELERATION;
 }
