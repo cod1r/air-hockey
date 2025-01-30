@@ -1,5 +1,6 @@
 #ifndef _RENDERER_H
 #define _RENDERER_H
+#include "constants.h"
 #include "OpenGLFunctions.h"
 #include "qoi/qoi.h"
 #include <SDL2/SDL.h>
@@ -70,9 +71,8 @@ public:
   void init_puck(std::vector<float> &);
   void init_paddle(std::vector<float> &);
   void init_table_texture();
-  void update_puck_coords(std::vector<float> &);
-  void update_paddle_coords(std::vector<float> &);
-  void update_puck_inter_coords(std::vector<float> &);
+  void update_puck_coords(const std::array<float, CONSTANTS::NUM_VERTICES> &);
+  void update_paddle_coords(const std::array<float, CONSTANTS::NUM_VERTICES> &);
   void load_assets();
 };
 #endif

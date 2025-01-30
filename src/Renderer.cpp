@@ -130,8 +130,7 @@ void Renderer::render() {
     glFunctions->glUseProgram(programs.at(PUCK_IDX));
     glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(PUCK_IDX));
     glFunctions->glVertexAttribPointer(buffer_info.at(PUCK_IDX).attrib_location,
-                                       2, GL_FLOAT, GL_FALSE, sizeof(float) *
-                                       2, 0);
+                                       2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
     glFunctions->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebos.at(PUCK_IDX));
     glFunctions->glDrawElements(GL_TRIANGLES, CONSTANTS::NUM_SIDES * 3,
                                 GL_UNSIGNED_INT, 0);
@@ -140,8 +139,7 @@ void Renderer::render() {
     glFunctions->glUseProgram(programs.at(PADDLE_IDX));
     glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(PADDLE_IDX));
     glFunctions->glVertexAttribPointer(buffer_info.at(PADDLE_IDX).attrib_location,
-                                       2, GL_FLOAT, GL_FALSE, sizeof(float) *
-                                       2, 0);
+                                       2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
     glFunctions->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebos.at(PADDLE_IDX));
     glFunctions->glDrawElements(GL_TRIANGLES, CONSTANTS::NUM_SIDES * 3,
                                 GL_UNSIGNED_INT, 0);
@@ -364,12 +362,12 @@ void Renderer::init_paddle(std::vector<float> &coords) {
                               GL_STATIC_DRAW);
   }
 }
-void Renderer::update_puck_coords(std::vector<float> &coords) {
+void Renderer::update_puck_coords(const std::array<float, CONSTANTS::NUM_VERTICES> &coords) {
   glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(PUCK_IDX));
   glFunctions->glBufferSubData(GL_ARRAY_BUFFER, 0,
                                sizeof(float) * coords.size(), coords.data());
 }
-void Renderer::update_paddle_coords(std::vector<float> &coords) {
+void Renderer::update_paddle_coords(const std::array<float, CONSTANTS::NUM_VERTICES> &coords) {
   glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(PADDLE_IDX));
   glFunctions->glBufferSubData(GL_ARRAY_BUFFER, 0,
                                sizeof(float) * coords.size(), coords.data());
