@@ -2,6 +2,7 @@
 #include "Paddle.h"
 #include "Puck.h"
 #include "Renderer.h"
+#include "src/constants.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <cmath>
@@ -13,7 +14,7 @@ generate_circle_verts(float radius, float offsetx, float offsety) {
   for (size_t idx = 0; idx < CONSTANTS::NUM_VERTICES - 2; idx += 2) {
     float angle =
         (360.0f / CONSTANTS::NUM_SIDES) * (static_cast<float>(idx) / 2.f) * static_cast<float>(std::numbers::pi) / 180.0f;
-    float x = std::cos(angle) * radius;
+    float x = std::cos(angle) * radius * CONSTANTS::WINDOW_HEIGHT/CONSTANTS::WINDOW_WIDTH;
     float y = std::sin(angle) * radius;
     vertices[idx] = x + offsetx;
     vertices[idx + 1] = y + offsety;
@@ -36,9 +37,9 @@ AirHockey::AirHockey() {
 AirHockey::~AirHockey() {}
 
 void AirHockey::determine_puck_velocity_when_collided(Puck* puck, const Paddle* paddle) {
-  float current_center_x = paddle->vertices[paddle->vertices.size() - 2];
+  float current_center_x = paddle->vertices[paddle->vertices.size() - 2] * CONSTANTS::WINDOW_WIDTH/CONSTANTS::WINDOW_HEIGHT;
   float current_center_y = paddle->vertices[paddle->vertices.size() - 1];
-  float puck_center_x = puck->vertices[puck->vertices.size() - 2];
+  float puck_center_x = puck->vertices[puck->vertices.size() - 2] * CONSTANTS::WINDOW_WIDTH/CONSTANTS::WINDOW_HEIGHT;
   float puck_center_y = puck->vertices[puck->vertices.size() - 1];
   float dist_x = puck_center_x - current_center_x;
   float dist_y = puck_center_y - current_center_y;
