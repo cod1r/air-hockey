@@ -108,11 +108,182 @@ void AirHockey::loop() {
     float current_center_y = paddle->vertices[paddle->vertices.size() - 1];
     paddle->velocity_x = 0.002f * (mouse_x - current_center_x);
     paddle->velocity_y = 0.002f * (mouse_y - current_center_y);
-    paddle->update();
+    update_paddle();
     determine_puck_velocity_when_collided(puck, paddle);
-    puck->update();
+    update_puck();
     renderer->update_puck_coords(puck->vertices);
     renderer->update_paddle_coords(paddle->vertices);
     renderer->render();
+  }
+}
+
+void AirHockey::update_puck() {
+  // some values are from just eyeballing and looking at the values printed for the location
+  // of my mouse
+  auto left_boundary = -0.96f;
+  auto right_boundary = 0.96f;
+
+  auto top_left_boundary_x = -0.18f;
+  auto top_left_boundary_y = 0.975f;
+
+  auto top_right_boundary_x = 0.18f;
+  auto top_right_boundary_y = 0.975f;
+
+  auto bottom_left_boundary_x = -0.18f;
+  auto bottom_left_boundary_y = -0.975f;
+
+  auto bottom_right_boundary_x = 0.18f;
+  auto bottom_right_boundary_y = -0.975f;
+
+  float add_amt_x = puck->velocity_x;
+  float add_amt_y = puck->velocity_y;
+
+  for (size_t i = 0; i < puck->vertices.size(); i += 2) {
+    const auto newX = puck->vertices[i] + add_amt_x;
+    const auto newY = puck->vertices[i + 1] + add_amt_y;
+    if (newX < left_boundary || newX > right_boundary) {
+      add_amt_x = -add_amt_x;
+    }
+    if (newX <= top_left_boundary_x && newY >= top_left_boundary_y) {
+      switch (puck->r) {
+        case Region::LEFT: {
+          add_amt_y = -add_amt_y;
+        } break;
+        case Region::RIGHT: {
+          // this case shouldn't be possible
+        } break;
+        case Region::MIDDLE: {
+          add_amt_x = -add_amt_x;
+        } break;
+      }
+    }
+    if (newX >= top_right_boundary_x && newY >= top_right_boundary_y) {
+      switch (puck->r) {
+        case Region::LEFT: {
+          // this case shouldn't be possible
+        } break;
+        case Region::RIGHT: {
+          add_amt_y = -add_amt_y;
+        } break;
+        case Region::MIDDLE: {
+          add_amt_x = -add_amt_x;
+        } break;
+      }
+    }
+    if (newX <= bottom_left_boundary_x && newY <= bottom_left_boundary_y) {
+      switch (puck->r) {
+        case Region::LEFT: {
+          add_amt_y = -add_amt_y;
+        } break;
+        case Region::RIGHT: {
+          // this case shouldn't be possible
+        } break;
+        case Region::MIDDLE: {
+          add_amt_x = -add_amt_x;
+        } break;
+      }
+    }
+    if (newX >= bottom_right_boundary_x && newY <= bottom_right_boundary_y) {
+      switch (puck->r) {
+        case Region::LEFT: {
+          // this case shouldn't be possible
+        } break;
+        case Region::RIGHT: {
+          add_amt_y = -add_amt_y;
+        } break;
+        case Region::MIDDLE: {
+          add_amt_x = -add_amt_x;
+        } break;
+      }
+    }
+  }
+  float shift_vertical_amt = 0.f;
+  float shift_horizontal_amt = 0.f;
+  for (size_t i = 0; i < puck->vertices.size(); i += 2) {
+    if (puck->vertices[i] < left_boundary) {
+      shift_horizontal_amt = std::max(left_boundary - puck->vertices[i], shift_horizontal_amt);
+    }
+    if (puck->vertices[i] > right_boundary) {
+      shift_horizontal_amt = std::min(right_boundary - puck->vertices[i], shift_horizontal_amt);
+    }
+    if (puck->vertices[i] >= bottom_right_boundary_x && puck->vertices[i + 1] <= bottom_right_boundary_y) {
+      switch (puck->r) {
+        case Region::LEFT: {
+          // this case shouldn't be possible
+        } break;
+        case Region::RIGHT: {
+          shift_vertical_amt = std::max(bottom_right_boundary_y - puck->vertices[i + 1], shift_vertical_amt);
+        } break;
+        case Region::MIDDLE: {
+          shift_horizontal_amt = std::min(bottom_right_boundary_x - puck->vertices[i], shift_horizontal_amt);
+        } break;
+      }
+    }
+    if (puck->vertices[i] <= bottom_left_boundary_x && puck->vertices[i + 1] <= bottom_left_boundary_y) {
+      switch (puck->r) {
+        case Region::LEFT: {
+          shift_vertical_amt = std::max(bottom_left_boundary_y - puck->vertices[i + 1], shift_vertical_amt);
+        } break;
+        case Region::RIGHT: {
+          // this case shouldn't be possible
+        } break;
+        case Region::MIDDLE: {
+          shift_horizontal_amt = std::max(bottom_left_boundary_x - puck->vertices[i], shift_horizontal_amt);
+        } break;
+      }
+    }
+    if (puck->vertices[i] >= top_right_boundary_x && puck->vertices[i + 1] >= top_right_boundary_y) {
+      switch (puck->r) {
+        case Region::LEFT: {
+          shift_vertical_amt = std::min(top_right_boundary_y - puck->vertices[i + 1], shift_vertical_amt);
+        } break;
+        case Region::RIGHT: {
+          // this case shouldn't be possible
+        } break;
+        case Region::MIDDLE: {
+          shift_horizontal_amt = std::min(top_right_boundary_x - puck->vertices[i], shift_horizontal_amt);
+        } break;
+      }
+    }
+    if (puck->vertices[i] <= top_left_boundary_x && puck->vertices[i + 1] >= top_left_boundary_y) {
+      switch (puck->r) {
+        case Region::LEFT: {
+          shift_vertical_amt = std::min(top_left_boundary_y - puck->vertices[i + 1], shift_vertical_amt);
+        } break;
+        case Region::RIGHT: {
+          // this case shouldn't be possible
+        } break;
+        case Region::MIDDLE: {
+          shift_horizontal_amt = std::max(top_left_boundary_x - puck->vertices[i], shift_horizontal_amt);
+        } break;
+      }
+    }
+  }
+  for (size_t i = 0; i < puck->vertices.size(); i += 2) {
+    puck->vertices[i] += add_amt_x;
+    puck->vertices[i + 1] += add_amt_y;
+    if (!std::isinf(shift_horizontal_amt)) {
+      puck->vertices[i] += shift_horizontal_amt;
+    }
+    if (!std::isinf(shift_vertical_amt)) {
+      puck->vertices[i + 1] += shift_vertical_amt;
+    }
+  }
+  fmt::println("{} {}", shift_vertical_amt, shift_horizontal_amt);
+  if (puck->vertices[puck->vertices.size() - 2] <= -0.18f) {
+    puck->r = Region::LEFT;
+  } else if (puck->vertices[puck->vertices.size() - 2] >= 0.18f) {
+    puck->r = Region::RIGHT;
+  } else {
+    puck->r = Region::MIDDLE;
+  }
+  puck->velocity_x = add_amt_x * CONSTANTS::DECELERATION;
+  puck->velocity_y = add_amt_y * CONSTANTS::DECELERATION;
+}
+
+void AirHockey::update_paddle() {
+  for (size_t i = 0; i < paddle->vertices.size(); i += 2) {
+    paddle->vertices[i] += paddle->velocity_x;
+    paddle->vertices[i + 1] += paddle->velocity_y;
   }
 }

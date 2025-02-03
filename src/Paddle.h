@@ -10,6 +10,5 @@ public:
   Paddle();
   ~Paddle();
   std::array<float, CONSTANTS::NUM_VERTICES> vertices;
-  void update();
 };
 #endif
