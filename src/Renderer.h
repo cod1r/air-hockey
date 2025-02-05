@@ -1,9 +1,17 @@
 #ifndef _RENDERER_H
 #define _RENDERER_H
-#include "constants.h"
-#include "OpenGLFunctions.h"
 #include "qoi/qoi.h"
 #include <SDL2/SDL.h>
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#endif
+#ifdef __LINUX__
+#include <GL/gl.h>
+#endif
+#ifdef __WINDOWS__
+#include <gl/GL.h>
+#endif
+#include "constants.h"
 #include <vector>
 #define GET_GL_ERROR()                                                         \
   GLenum err = glFunctions->glGetError();                                      \
@@ -39,7 +47,6 @@
   case GL_NO_ERROR:                                                            \
     break;                                                                     \
   }
-class OpenGLFunctions;
 static const int PUCK_IDX = 0;
 static const int PADDLE_IDX = 1;
 static const int TEXTURE_IDX = 2;
@@ -60,7 +67,6 @@ class Renderer {
   GLuint fshdr;
 
 public:
-  OpenGLFunctions *glFunctions = nullptr;
   SDL_Window *window = nullptr;
   qoi_desc desc;
   uint8_t *rgb_pixels = nullptr;
