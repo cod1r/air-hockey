@@ -1,3 +1,4 @@
+#include <OpenGL/gl.h>
 #include <string_view>
 #define QOI_IMPLEMENTATION
 #include "Renderer.h"
@@ -14,19 +15,16 @@
 
 Renderer::Renderer() {
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-    std::cout << SDL_GetError() << std::endl;
-    throw;
+    throw std::runtime_error(SDL_GetError());
   }
   window = SDL_CreateWindow("AirHockey", 0, 0, CONSTANTS::WINDOW_WIDTH,
                             CONSTANTS::WINDOW_HEIGHT, SDL_WINDOW_OPENGL);
   if (window == NULL) {
-    std::cout << SDL_GetError() << std::endl;
-    throw;
+    throw std::runtime_error(SDL_GetError());
   }
   SDL_GLContext ctx = SDL_GL_CreateContext(window);
   if (SDL_GL_MakeCurrent(window, ctx) < 0) {
-    std::cout << SDL_GetError() << std::endl;
-    throw;
+    throw std::runtime_error(SDL_GetError());
   }
   glFunctions = new OpenGLFunctions();
   glFunctions->glEnable(GL_TEXTURE_2D);
@@ -288,7 +286,7 @@ void Renderer::init_puck(std::vector<float> &coords) {
 
     std::array<int, CONSTANTS::NUM_SIDES * 3> vertices{{}};
     int counter = 0;
-    for (int i = 0; i < (int)vertices.size(); i += 3) {
+    for (size_t i = 0; i < vertices.size(); i += 3) {
       vertices[i] = counter;
       vertices[i + 1] = counter + 1;
       vertices[i + 2] = CONSTANTS::NUM_VERTICES / 2 - 1;
@@ -351,7 +349,7 @@ void Renderer::init_paddle(std::vector<float> &coords) {
 
     std::array<int, CONSTANTS::NUM_SIDES * 3> vertices{{}};
     int counter = 0;
-    for (int i = 0; i < (int)vertices.size(); i += 3) {
+    for (size_t i = 0; i < vertices.size(); i += 3) {
       vertices[i] = counter;
       vertices[i + 1] = counter + 1;
       vertices[i + 2] = CONSTANTS::NUM_VERTICES / 2 - 1;
@@ -363,14 +361,18 @@ void Renderer::init_paddle(std::vector<float> &coords) {
   }
 }
 void Renderer::update_puck_coords(const std::array<float, CONSTANTS::NUM_VERTICES> &coords) {
+  auto x_scaled = coords;
+  for (size_t i = 0; i < coords.size(); i += 2) x_scaled[i] = coords[i] * CONSTANTS::WINDOW_HEIGHT / CONSTANTS::WINDOW_WIDTH;
   glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(PUCK_IDX));
   glFunctions->glBufferSubData(GL_ARRAY_BUFFER, 0,
-                               sizeof(float) * coords.size(), coords.data());
+                               sizeof(float) * x_scaled.size(), x_scaled.data());
 }
 void Renderer::update_paddle_coords(const std::array<float, CONSTANTS::NUM_VERTICES> &coords) {
+  auto x_scaled = coords;
+  for (size_t i = 0; i < coords.size(); i += 2) x_scaled[i] = coords[i] * CONSTANTS::WINDOW_HEIGHT / CONSTANTS::WINDOW_WIDTH;
   glFunctions->glBindBuffer(GL_ARRAY_BUFFER, vbos.at(PADDLE_IDX));
   glFunctions->glBufferSubData(GL_ARRAY_BUFFER, 0,
-                               sizeof(float) * coords.size(), coords.data());
+                               sizeof(float) * x_scaled.size(), x_scaled.data());
 }
 void Renderer::load_assets() {
   rgb_pixels = (uint8_t *)qoi_read("assets/texture_atlas.qoi", &desc, 4);

@@ -1,5 +1,15 @@
 #include "OpenGLFunctions.h"
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#endif
+#ifdef __LINUX__
+#include <GL/gl.h>
+#endif
+#ifdef __WINDOWS__
+#include <gl/GL.h>
+#endif
 OpenGLFunctions::OpenGLFunctions() {
+  glViewport = (void(*)(GLint x, GLint y, GLsizei width, GLsizei height))SDL_GL_GetProcAddress("glViewport");
   glDrawPixels = (void (*)(GLsizei, GLsizei , GLenum , GLenum , const void *))SDL_GL_GetProcAddress("glDrawPixels");
   glTexSubImage2D = (void (*)(GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, const void *))SDL_GL_GetProcAddress("glTexSubImage2D");
   glGetVertexAttribiv = (void(*)(GLuint, GLenum, GLint*))SDL_GL_GetProcAddress("glGetVertexAttribiv");

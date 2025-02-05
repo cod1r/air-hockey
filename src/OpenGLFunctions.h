@@ -12,6 +12,7 @@
 #define _OPENGL_FUNCTIONS_H
 class OpenGLFunctions {
 public:
+  void (*glViewport)(GLint, GLint, GLsizei, GLsizei);
   void (*glDrawPixels)(GLsizei, GLsizei , GLenum , GLenum , const void *);
   void (*glTexSubImage2D)(GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, const void *);
   void (*glGetVertexAttribiv)(GLuint, GLenum , GLint *);

@@ -15,6 +15,7 @@ public:
   void determine_puck_velocity_when_collided(Puck* puck, const Paddle* paddle);
   void update_puck();
   void update_paddle();
+  bool is_puck_pinned();
   AirHockey();
   ~AirHockey();
   void loop();
